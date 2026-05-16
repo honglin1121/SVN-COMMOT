@@ -1,0 +1,103 @@
+{
+  "name": "issue-link-push",
+  "displayName": "Issue Link Push",
+  "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
+  "version": "0.1.0",
+  "publisher": "local",
+  "author": {
+    "name": "LKK",
+    "email": "your-email@example.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/issue-link-push.git"
+  },
+  "homepage": "https://github.com/your-username/issue-link-push#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/issue-link-push/issues"
+  },
+  "keywords": [
+    "DevOps",
+    "Git",
+    "Commit",
+    "Workhour"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:issueLinkPush.submitWithDevOpsTask",
+    "onCommand:issueLinkPush.initializeDevOps",
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "issueLinkPush.submitWithDevOpsTask",
+        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u5e76\u63a8\u9001",
+        "category": "Issue Link Push",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "issueLinkPush.initializeDevOps",
+        "title": "\u521d\u59cb\u5316 DevOps \u8d26\u53f7",
+        "category": "Issue Link Push",
+        "icon": "$(account)"
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "issueLinkPush.submitWithDevOpsTask",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "issueLinkPush.submitWithDevOpsTask"
+        },
+        {
+          "command": "issueLinkPush.initializeDevOps"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Issue Link Push",
+      "properties": {
+        "issueLinkPush.commitTemplate": {
+          "type": "string",
+          "default": "${COMMIT_TYPE}:${SUBJECT} scrum -e ${CODE} -h:${HOURS} -s:${PROGRESS}",
+          "description": "Commit message template. Supports ${COMMIT_TYPE}, ${SUBJECT}, ${CODE}, ${HOURS}, ${PROGRESS}, ${TYPE}, ${PROJECT}."
+        },
+        "issueLinkPush.requestTimeoutMs": {
+          "type": "number",
+          "default": 10000,
+          "minimum": 1000,
+          "description": "DevOps API request timeout in milliseconds."
+        },
+        "issueLinkPush.cacheTtlMs": {
+          "type": "number",
+          "default": 300000,
+          "minimum": 0,
+          "description": "Local DevOps product and task cache TTL in milliseconds. Set to 0 to disable caching."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.4.5"
+  }
+}
