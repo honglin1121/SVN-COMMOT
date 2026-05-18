@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
       await configManager.initializeDevOpsAccount();
       cache = undefined;
     }),
-    // @AI-Begin W3F6G 20260518 @@cc
+    // @AI-Begin W3F6G 20260518 @@clearCache
     vscode.commands.registerCommand('issueLinkPush.clearCache', () => {
       if (cache) {
         cache.clear();
