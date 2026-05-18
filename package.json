@@ -33,6 +33,7 @@
   "activationEvents": [
     "onCommand:issueLinkPush.submitWithDevOpsTask",
     "onCommand:issueLinkPush.initializeDevOps",
+    "onCommand:issueLinkPush.clearCache",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
@@ -49,6 +50,12 @@
         "title": "\u521d\u59cb\u5316 DevOps \u8d26\u53f7",
         "category": "Issue Link Push",
         "icon": "$(account)"
+      },
+      {
+        "command": "issueLinkPush.clearCache",
+        "title": "\u6e05\u9664 DevOps \u7f13\u5b58",
+        "category": "Issue Link Push",
+        "icon": "$(clear-all)"
       }
     ],
     "menus": {
@@ -64,6 +71,9 @@
         },
         {
           "command": "issueLinkPush.initializeDevOps"
+        },
+        {
+          "command": "issueLinkPush.clearCache"
         }
       ]
     },

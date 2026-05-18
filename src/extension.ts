@@ -20,6 +20,16 @@ export function activate(context: vscode.ExtensionContext): void {
       await configManager.initializeDevOpsAccount();
       cache = undefined;
     }),
+    // @AI-Begin W3F6G 20260518 @@cc
+    vscode.commands.registerCommand('issueLinkPush.clearCache', () => {
+      if (cache) {
+        cache.clear();
+        vscode.window.showInformationMessage('DevOps 缓存已清除。');
+      } else {
+        vscode.window.showInformationMessage('缓存为空，无需清除。');
+      }
+    }),
+    // @AI-End W3F6G 20260518 @@cc
     vscode.commands.registerCommand('issueLinkPush.submitWithDevOpsTask', async () => {
       const config = await configManager.load();
       cache ??= new DevOpsCache(config.cacheTtlMs);
