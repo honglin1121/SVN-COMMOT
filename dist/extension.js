@@ -52,7 +52,19 @@ function activate(context) {
     }), vscode.commands.registerCommand('issueLinkPush.initializeDevOps', async () => {
         await configManager.initializeDevOpsAccount();
         cache = undefined;
-    }), vscode.commands.registerCommand('issueLinkPush.submitWithDevOpsTask', async () => {
+    }), 
+    // @AI-Begin W3F6G 20260518 @@cc
+    vscode.commands.registerCommand('issueLinkPush.clearCache', () => {
+        if (cache) {
+            cache.clear();
+            vscode.window.showInformationMessage('DevOps 缓存已清除。');
+        }
+        else {
+            vscode.window.showInformationMessage('缓存为空，无需清除。');
+        }
+    }), 
+    // @AI-End W3F6G 20260518 @@cc
+    vscode.commands.registerCommand('issueLinkPush.submitWithDevOpsTask', async () => {
         const config = await configManager.load();
         cache ??= new DevOpsCache_1.DevOpsCache(config.cacheTtlMs);
         await runSubmitWithDevOpsTask(config, cache);
@@ -83,18 +95,31 @@ async function runSubmitWithDevOpsTask(config, cache) {
             title: '正在推送代码',
             cancellable: false
         }, () => repository.push());
-        if (provider.addWorkHour) {
+        // @AI-Begin M9N0P 20260518 @@cc
+        const createTime = new Date().toISOString().split('T')[0];
+        const spendTaskTime = Number(metadata.hours);
+        const dayCompletion = `${metadata.progress}%`;
+        const taskId = metadata.task.id || metadata.task.code;
+        if (metadata.todayWorkHour && provider.modifyWorkHour) {
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: '正在更新今日工时到 DevOps',
+                cancellable: false
+            }, async () => {
+                const workContent = metadata.todayWorkHour.workContent + '\n' + metadata.subject;
+                await provider.modifyWorkHour(metadata.todayWorkHour.taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent);
+            });
+        }
+        else if (provider.addWorkHour) {
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: '正在登记工时到 DevOps',
                 cancellable: false
             }, async () => {
-                const createTime = new Date().toISOString().split('T')[0];
-                const spendTaskTime = Number(metadata.hours);
-                const dayCompletion = `${metadata.progress}%`;
-                await provider.addWorkHour(metadata.task.id || metadata.task.code, createTime, spendTaskTime, dayCompletion, metadata.subject);
+                await provider.addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, metadata.subject);
             });
         }
+        // @AI-End M9N0P 20260518 @@cc
         vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
     }
     catch (error) {

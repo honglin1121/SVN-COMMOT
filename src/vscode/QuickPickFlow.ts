@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { DevOpsCache } from '../core/DevOpsCache';
 import { formatDevOpsCommitMetadata } from '../core/DevOpsCommitFormatter';
-import { DevOpsCommitMetadata, DevOpsProvider, DevOpsTaskType } from '../core/DevOpsProvider';
+import { DevOpsCommitMetadata, DevOpsProvider, DevOpsTaskType, WorkHourRecord } from '../core/DevOpsProvider';
 
 const COMMIT_TYPES = [
   { label: 'feat', description: '增加新功能' },
@@ -96,6 +96,25 @@ export async function collectDevOpsCommitMetadata(
     return undefined;
   }
 
+  // @AI-Begin J7K8L 20260518 @@cc
+  let todayWorkHour: WorkHourRecord | undefined;
+  if (provider.fetchWorkHours) {
+    const taskId = taskPick.task.id || taskPick.task.code;
+    todayWorkHour = await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: '正在查询今日工时记录',
+        cancellable: false
+      },
+      async () => {
+        const records = await provider.fetchWorkHours!(taskId);
+        const today = new Date().toISOString().split('T')[0];
+        return records.find((r) => r.taskWorkhourDate === today);
+      }
+    );
+  }
+  // @AI-End J7K8L 20260518 @@cc
+
   const commitTypePick = await vscode.window.showQuickPick(COMMIT_TYPES, {
     title: '选择 commit type',
     placeHolder: '必须以指定 type 开头',
@@ -118,13 +137,19 @@ export async function collectDevOpsCommitMetadata(
     return undefined;
   }
 
+  // @AI-Begin J7K8L 20260518 @@cc
+  const hoursPrompt = todayWorkHour
+    ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(taskPick.task)}`
+    : `请输入本次提交关联的 DevOps 工时。${formatHoursReference(taskPick.task)}`;
+
   const hours = await vscode.window.showInputBox({
     title: '输入投入工时',
-    prompt: `请输入本次提交关联的 DevOps 工时。${formatHoursReference(taskPick.task)}`,
+    prompt: hoursPrompt,
     placeHolder: '例如：2 或 1.5',
     ignoreFocusOut: true,
     validateInput: validateHours
   });
+  // @AI-End J7K8L 20260518 @@cc
 
   if (hours === undefined) {
     return undefined;
@@ -142,14 +167,17 @@ export async function collectDevOpsCommitMetadata(
     return undefined;
   }
 
+  // @AI-Begin J7K8L 20260518 @@cc
   const metadata: DevOpsCommitMetadata = {
     project: projectPick.project,
     task: taskPick.task,
     commitType: commitTypePick.label,
     subject: subject.trim(),
     hours: normalizeNumber(hours),
-    progress: normalizeNumber(progress)
+    progress: normalizeNumber(progress),
+    todayWorkHour
   };
+  // @AI-End J7K8L 20260518 @@cc
   const preview = formatDevOpsCommitMetadata(commitTemplate, metadata);
   const confirmation = await vscode.window.showInformationMessage(
     `即将把最新未推送 commit message 修改为：${preview}`,
@@ -224,3 +252,9 @@ function formatHoursReference(task: { estimatedHours?: string; usedHours?: strin
 function formatProgressReference(task: { currentProgress?: string }): string {
   return task.currentProgress ? `当前完成度：${task.currentProgress}%。` : '';
 }
+
+// @AI-Begin J7K8L 20260518 @@cc
+function formatTodayWorkHourHint(record: { spendTaskTime: number; dayCompletion: string }): string {
+  return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}），工时将覆盖非累加，工作内容将追加。`;
+}
+// @AI-End J7K8L 20260518 @@cc

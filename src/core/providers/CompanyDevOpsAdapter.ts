@@ -1,5 +1,5 @@
 import { ProviderError } from '../AppError';
-import { DevOpsProject, DevOpsProvider, DevOpsTask, DevOpsTaskType } from '../DevOpsProvider';
+import { DevOpsProject, DevOpsProvider, DevOpsTask, DevOpsTaskType, WorkHourRecord } from '../DevOpsProvider';
 import { fetchJson, parseResponsePayload, readableHttpError } from '../http';
 
 const DEVOPS_BASE_URL = 'https://devops.ctjsoft.com';
@@ -172,6 +172,68 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
       }
     );
   }
+
+  // @AI-Begin D3E4F 20260518 @@cc
+  async fetchWorkHours(taskId: string): Promise<WorkHourRecord[]> {
+    const session = await this.getSession();
+    const url = new URL(`${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/workHour/list`);
+    url.searchParams.set('taskId', taskId);
+
+    const response = await fetchJson<{ data?: WorkHourRecord[] }>(this.name, url.toString(), {
+      timeoutMs: this.options.timeoutMs,
+      headers: {
+        cookie: session.cookie,
+        'user-context': JSON.stringify({
+          userId: session.userId,
+          pageId: DEVOPS_PAGE_ID
+        })
+      }
+    });
+
+    return response.data ?? [];
+  }
+  // @AI-End D3E4F 20260518 @@cc
+
+  // @AI-Begin G5H6I 20260518 @@cc
+  async modifyWorkHour(
+    taskWorkhourId: string,
+    taskId: string,
+    createTime: string,
+    spendTaskTime: number,
+    dayCompletion: string,
+    workContent: string
+  ): Promise<void> {
+    const session = await this.getSession();
+
+    await fetchJson<unknown>(
+      this.name,
+      `${DEVOPS_BASE_URL}/devops-server/config/v3/task/modify/modifyWorkHour`,
+      {
+        method: 'POST',
+        timeoutMs: this.options.timeoutMs,
+        headers: {
+          'content-type': 'application/json',
+          cookie: session.cookie,
+          origin: DEVOPS_BASE_URL,
+          'user-context': JSON.stringify({
+            userId: session.userId,
+            pageId: DEVOPS_PAGE_ID
+          })
+        },
+        body: JSON.stringify({
+          createTime,
+          taskWorkhourType: '24',
+          spendTaskTime,
+          dayCompletion,
+          workContent,
+          taskId,
+          taskWorkhourId,
+          updateUser: session.userId
+        })
+      }
+    );
+  }
+  // @AI-End G5H6I 20260518 @@cc
 
   private async getSession(): Promise<DevOpsSession> {
     if (this.session) {

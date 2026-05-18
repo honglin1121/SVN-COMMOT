@@ -74,7 +74,32 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
       () => repository.push()
     );
 
-    if (provider.addWorkHour) {
+    // @AI-Begin M9N0P 20260518 @@cc
+    const createTime = new Date().toISOString().split('T')[0];
+    const spendTaskTime = Number(metadata.hours);
+    const dayCompletion = `${metadata.progress}%`;
+    const taskId = metadata.task.id || metadata.task.code;
+
+    if (metadata.todayWorkHour && provider.modifyWorkHour) {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: '正在更新今日工时到 DevOps',
+          cancellable: false
+        },
+        async () => {
+          const workContent = metadata.todayWorkHour!.workContent + '\n' + metadata.subject;
+          await provider.modifyWorkHour!(
+            metadata.todayWorkHour!.taskWorkhourId,
+            taskId,
+            createTime,
+            spendTaskTime,
+            dayCompletion,
+            workContent
+          );
+        }
+      );
+    } else if (provider.addWorkHour) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -82,11 +107,8 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
           cancellable: false
         },
         async () => {
-          const createTime = new Date().toISOString().split('T')[0];
-          const spendTaskTime = Number(metadata.hours);
-          const dayCompletion = `${metadata.progress}%`;
           await provider.addWorkHour!(
-            metadata.task.id || metadata.task.code,
+            taskId,
             createTime,
             spendTaskTime,
             dayCompletion,
@@ -95,6 +117,7 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
         }
       );
     }
+    // @AI-End M9N0P 20260518 @@cc
 
     vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
   } catch (error) {

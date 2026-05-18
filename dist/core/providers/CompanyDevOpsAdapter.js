@@ -103,6 +103,52 @@ class CompanyDevOpsAdapter {
             })
         });
     }
+    // @AI-Begin D3E4F 20260518 @@cc
+    async fetchWorkHours(taskId) {
+        const session = await this.getSession();
+        const url = new URL(`${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/workHour/list`);
+        url.searchParams.set('taskId', taskId);
+        const response = await (0, http_1.fetchJson)(this.name, url.toString(), {
+            timeoutMs: this.options.timeoutMs,
+            headers: {
+                cookie: session.cookie,
+                'user-context': JSON.stringify({
+                    userId: session.userId,
+                    pageId: DEVOPS_PAGE_ID
+                })
+            }
+        });
+        return response.data ?? [];
+    }
+    // @AI-End D3E4F 20260518 @@cc
+    // @AI-Begin G5H6I 20260518 @@cc
+    async modifyWorkHour(taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent) {
+        const session = await this.getSession();
+        await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/modify/modifyWorkHour`, {
+            method: 'POST',
+            timeoutMs: this.options.timeoutMs,
+            headers: {
+                'content-type': 'application/json',
+                cookie: session.cookie,
+                origin: DEVOPS_BASE_URL,
+                'user-context': JSON.stringify({
+                    userId: session.userId,
+                    pageId: DEVOPS_PAGE_ID
+                })
+            },
+            body: JSON.stringify({
+                createTime,
+                taskWorkhourType: '24',
+                spendTaskTime,
+                dayCompletion,
+                workContent,
+                taskId,
+                taskWorkhourId,
+                updateUser: session.userId
+            })
+        });
+    }
+    // @AI-End G5H6I 20260518 @@cc
     async getSession() {
         if (this.session) {
             return this.session;

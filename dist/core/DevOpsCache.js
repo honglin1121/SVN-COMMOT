@@ -17,15 +17,19 @@ class DevOpsCache {
         this.projectsCachedAt = Date.now();
         return this.projects;
     }
+    // @AI-Begin T8K2M 20260518 @@cc
     async getTasks(provider, projectCode, type) {
         const key = `${projectCode}:${type}`;
-        const cached = this.tasks.get(key);
-        if (cached && this.ttlMs > 0 && Date.now() - cached.cachedAt < this.ttlMs) {
-            return cached.items;
-        }
         const items = await provider.fetchTasks(projectCode, type);
         this.tasks.set(key, { cachedAt: Date.now(), items });
         return items;
+    }
+    // @AI-End T8K2M 20260518 @@cc
+    // @AI-Begin X9N7P 20260518 @@cc
+    clear() {
+        this.projects = [];
+        this.projectsCachedAt = 0;
+        this.tasks.clear();
     }
 }
 exports.DevOpsCache = DevOpsCache;
