@@ -3,7 +3,7 @@
   "displayName": "Issue Link Push",
   "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
   "version": "0.1.0",
-  "publisher": "local",
+  "publisher": "lkk-vscode-2136",
   "author": {
     "name": "LKK",
     "email": "your-email@example.com"
@@ -26,6 +26,7 @@
   "engines": {
     "vscode": "^1.90.0"
   },
+  "icon": "icon.png",
   "categories": [
     "SCM Providers",
     "Other"
