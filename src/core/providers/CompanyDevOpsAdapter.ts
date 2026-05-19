@@ -88,9 +88,11 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
     return projects;
   }
 
-  async fetchTasks(projectCode: string, type: DevOpsTaskType): Promise<DevOpsTask[]> {
+  // @AI-Begin R2S5T 20260519 @@cc
+  async fetchTasks(type: DevOpsTaskType): Promise<DevOpsTask[]> {
     const session = await this.getSession();
-    const response = await fetchJson<unknown>(
+    const groupValue = `executeUser7770$${session.userId}`;
+    const response = await fetchJson<unknown[]>(
       this.name,
       `${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/loadTaskListWithGroup`,
       {
@@ -112,24 +114,25 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
             currentUser: session.userId,
             currentProductId: 'undefined',
             configFlag: type === 'task' ? 'Task' : 'Bug',
-            parentId: 'createTime6259$0',
+            parentId: groupValue,
             taskTypeQueryRule: '0',
             progressStatus: 'incomplete',
-            prodId: [projectCode]
+            executeUser: [session.userId]
           },
-          groupId: DEVOPS_GROUP_ID,
-          groupField: 'createTime',
-          groupFieldValue: 'createTime6259$0',
+          groupId: '6',
+          groupField: 'executeUser',
+          groupFieldValue: groupValue,
           parentGroupInfos: [],
-          groupTaskCount: 1
+          groupTaskCount: 5
         })
       }
     );
 
-    return collectTaskItems(response)
-      .map((task) => this.toTask(task, projectCode, type))
+    return response
+      .map((item) => this.toTask(item as Record<string, unknown>, type))
       .filter((task) => task.code && task.title);
   }
+  // @AI-End R2S5T 20260519 @@cc
 
   async testConnection(): Promise<boolean> {
     await this.getSession();
@@ -315,22 +318,29 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
     }
   }
 
-  private toTask(task: TaskResponse, projectCode: string, type: DevOpsTaskType): DevOpsTask {
-    const code = task.taskNo ?? task.problemNo ?? task.code ?? task.taskCode ?? task.bugCode ?? task.taskId ?? task.id ?? '';
-    const title = task.title ?? task.name ?? task.taskName ?? task.bugName ?? code;
+  // @AI-Begin R2S5T 20260519 @@cc
+  private toTask(task: Record<string, unknown>, type: DevOpsTaskType): DevOpsTask {
+    const code = String(task.taskNo ?? task.problemNo ?? task.taskId ?? '');
+    const title = String(task.taskName ?? task.title ?? task.name ?? task.taskNo ?? code);
     return {
-      code: String(code),
-      title: String(title),
+      code,
+      title,
       type,
-      status: String(task.status ?? task.progressStatus ?? 'incomplete'),
-      projectCode,
+      status: String(task.implementStatus ?? task.status ?? task.progressStatus ?? 'incomplete'),
+      projectCode: String(task.prodId ?? task.projectCode ?? ''),
+      projectName: typeof task.prodName === 'string' ? task.prodName : undefined,
       estimatedHours: toOptionalString(task.planTaskTime),
-      usedHours: toOptionalString(task.devWorkload ?? task.proWorkload ?? task.executeTaskTime),
+      usedHours: toOptionalString(
+        (task.devWorkload as number | undefined) ??
+        (task.proWorkload as number | undefined) ??
+        (task.executeTaskTime as number | undefined)
+      ),
       currentProgress: toOptionalString(task.completion ?? task.groupTaskSumCompletion),
-      url: task.url,
-      id: String(task.taskId ?? task.id ?? task.taskCode ?? task.bugCode ?? code)
+      url: typeof task.url === 'string' ? task.url : undefined,
+      id: String(task.taskId ?? task.id ?? code)
     };
   }
+  // @AI-End R2S5T 20260519 @@cc
 }
 
 function toOptionalString(value: unknown): string | undefined {

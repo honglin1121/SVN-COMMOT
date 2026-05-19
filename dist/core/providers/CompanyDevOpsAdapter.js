@@ -37,8 +37,10 @@ class CompanyDevOpsAdapter {
         }
         return projects;
     }
-    async fetchTasks(projectCode, type) {
+    // @AI-Begin R2S5T 20260519 @@cc
+    async fetchTasks(type) {
         const session = await this.getSession();
+        const groupValue = `executeUser7770$${session.userId}`;
         const response = await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/loadTaskListWithGroup`, {
             method: 'POST',
             timeoutMs: this.options.timeoutMs,
@@ -58,22 +60,23 @@ class CompanyDevOpsAdapter {
                     currentUser: session.userId,
                     currentProductId: 'undefined',
                     configFlag: type === 'task' ? 'Task' : 'Bug',
-                    parentId: 'createTime6259$0',
+                    parentId: groupValue,
                     taskTypeQueryRule: '0',
                     progressStatus: 'incomplete',
-                    prodId: [projectCode]
+                    executeUser: [session.userId]
                 },
-                groupId: DEVOPS_GROUP_ID,
-                groupField: 'createTime',
-                groupFieldValue: 'createTime6259$0',
+                groupId: '6',
+                groupField: 'executeUser',
+                groupFieldValue: groupValue,
                 parentGroupInfos: [],
-                groupTaskCount: 1
+                groupTaskCount: 5
             })
         });
-        return collectTaskItems(response)
-            .map((task) => this.toTask(task, projectCode, type))
+        return response
+            .map((item) => this.toTask(item, type))
             .filter((task) => task.code && task.title);
     }
+    // @AI-End R2S5T 20260519 @@cc
     async testConnection() {
         await this.getSession();
         return true;
@@ -215,20 +218,24 @@ class CompanyDevOpsAdapter {
             clearTimeout(timeout);
         }
     }
-    toTask(task, projectCode, type) {
-        const code = task.taskNo ?? task.problemNo ?? task.code ?? task.taskCode ?? task.bugCode ?? task.taskId ?? task.id ?? '';
-        const title = task.title ?? task.name ?? task.taskName ?? task.bugName ?? code;
+    // @AI-Begin R2S5T 20260519 @@cc
+    toTask(task, type) {
+        const code = String(task.taskNo ?? task.problemNo ?? task.taskId ?? '');
+        const title = String(task.taskName ?? task.title ?? task.name ?? task.taskNo ?? code);
         return {
-            code: String(code),
-            title: String(title),
+            code,
+            title,
             type,
-            status: String(task.status ?? task.progressStatus ?? 'incomplete'),
-            projectCode,
+            status: String(task.implementStatus ?? task.status ?? task.progressStatus ?? 'incomplete'),
+            projectCode: String(task.prodId ?? task.projectCode ?? ''),
+            projectName: typeof task.prodName === 'string' ? task.prodName : undefined,
             estimatedHours: toOptionalString(task.planTaskTime),
-            usedHours: toOptionalString(task.devWorkload ?? task.proWorkload ?? task.executeTaskTime),
+            usedHours: toOptionalString(task.devWorkload ??
+                task.proWorkload ??
+                task.executeTaskTime),
             currentProgress: toOptionalString(task.completion ?? task.groupTaskSumCompletion),
-            url: task.url,
-            id: String(task.taskId ?? task.id ?? task.taskCode ?? task.bugCode ?? code)
+            url: typeof task.url === 'string' ? task.url : undefined,
+            id: String(task.taskId ?? task.id ?? code)
         };
     }
 }

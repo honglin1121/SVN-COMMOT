@@ -50,22 +50,7 @@ const COMMIT_TYPES = [
     { label: 'doc', description: '文档改动' }
 ];
 async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
-    const projects = await vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: '正在加载 DevOps 产品列表',
-        cancellable: false
-    }, () => cache.getProjects(provider));
-    const projectPick = await vscode.window.showQuickPick(projects.map((project) => ({
-        label: project.name,
-        project
-    })), {
-        title: '选择产品',
-        placeHolder: '搜索产品名称',
-        ignoreFocusOut: true
-    });
-    if (!projectPick) {
-        return undefined;
-    }
+    // @AI-Begin R2S5T 20260519 @@cc
     const taskTypePick = await vscode.window.showQuickPick([
         { label: 'task', description: '开发任务', value: 'task' },
         { label: 'bug', description: '缺陷修复', value: 'bug' }
@@ -82,28 +67,39 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
         location: vscode.ProgressLocation.Notification,
         title: `正在加载 ${taskType} 列表`,
         cancellable: false
-    }, () => cache.getTasks(provider, projectPick.project.code, taskType));
+    }, () => cache.getTasks(provider, taskType));
     if (tasks.length === 0) {
-        vscode.window.showWarningMessage(`${projectPick.project.name} 下没有未完成的 ${taskType}。`);
+        vscode.window.showWarningMessage(`没有未完成的 ${taskType}。`);
         return undefined;
     }
-    const taskPick = await vscode.window.showQuickPick(tasks.map((task) => ({
-        label: task.code,
-        description: task.status,
-        detail: `${task.title}${formatTaskReference(task)}`,
-        task
-    })), {
+    const grouped = groupByProduct(tasks);
+    const taskPickItems = [];
+    for (const [productName, productTasks] of grouped) {
+        taskPickItems.push({ label: productName, kind: vscode.QuickPickItemKind.Separator });
+        for (const task of productTasks) {
+            taskPickItems.push({
+                label: task.code,
+                description: task.status,
+                detail: `${task.title}${formatTaskReference(task)}`,
+                task
+            });
+        }
+    }
+    const taskPick = await vscode.window.showQuickPick(taskPickItems, {
         title: `选择一个 ${taskType}`,
         placeHolder: '搜索工作项编号或标题',
-        ignoreFocusOut: true
+        ignoreFocusOut: true,
+        matchOnDetail: true
     });
-    if (!taskPick) {
+    // @AI-End R2S5T 20260519 @@cc
+    if (!taskPick?.task) {
         return undefined;
     }
+    const selectedTask = taskPick.task;
     // @AI-Begin J7K8L 20260518 @@cc
     let todayWorkHour;
     if (provider.fetchWorkHours) {
-        const taskId = taskPick.task.id || taskPick.task.code;
+        const taskId = selectedTask.id || selectedTask.code;
         todayWorkHour = await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: '正在查询今日工时记录',
@@ -135,8 +131,8 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     }
     // @AI-Begin J7K8L 20260518 @@cc
     const hoursPrompt = todayWorkHour
-        ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(taskPick.task)}`
-        : `请输入本次提交关联的 DevOps 工时。${formatHoursReference(taskPick.task)}`;
+        ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(selectedTask)}`
+        : `请输入本次提交关联的 DevOps 工时。${formatHoursReference(selectedTask)}`;
     const hours = await vscode.window.showInputBox({
         title: '输入投入工时',
         prompt: hoursPrompt,
@@ -150,7 +146,7 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     }
     const progress = await vscode.window.showInputBox({
         title: '输入任务完成度',
-        prompt: `请输入任务完成度百分比。${formatProgressReference(taskPick.task)}100 会让工作项自动置为已解决。`,
+        prompt: `请输入任务完成度百分比。${formatProgressReference(selectedTask)}100 会让工作项自动置为已解决。`,
         placeHolder: '0-100',
         ignoreFocusOut: true,
         validateInput: validateProgress
@@ -160,8 +156,11 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     }
     // @AI-Begin J7K8L 20260518 @@cc
     const metadata = {
-        project: projectPick.project,
-        task: taskPick.task,
+        project: {
+            code: selectedTask.projectCode,
+            name: selectedTask.projectName || selectedTask.projectCode
+        },
+        task: selectedTask,
         commitType: commitTypePick.label,
         subject: subject.trim(),
         hours: normalizeNumber(hours),
@@ -235,4 +234,20 @@ function formatTodayWorkHourHint(record) {
     return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}），工时将覆盖非累加，工作内容将追加。`;
 }
 // @AI-End J7K8L 20260518 @@cc
+// @AI-Begin R2S5T 20260519 @@cc
+function groupByProduct(tasks) {
+    const map = new Map();
+    for (const task of tasks) {
+        const key = task.projectName || task.projectCode;
+        const group = map.get(key);
+        if (group) {
+            group.push(task);
+        }
+        else {
+            map.set(key, [task]);
+        }
+    }
+    return map;
+}
+// @AI-End R2S5T 20260519 @@cc
 //# sourceMappingURL=QuickPickFlow.js.map

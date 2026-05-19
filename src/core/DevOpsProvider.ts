@@ -5,18 +5,21 @@ export interface DevOpsProject {
   name: string;
 }
 
+// @AI-Begin R2S5T 20260519 @@cc
 export interface DevOpsTask {
   code: string;
   title: string;
   type: DevOpsTaskType;
   status: string;
   projectCode: string;
+  projectName?: string;
   estimatedHours?: string;
   usedHours?: string;
   currentProgress?: string;
   url?: string;
   id?: string;
 }
+// @AI-End R2S5T 20260519 @@cc
 
 // @AI-Begin A1B2C 20260518 @@cc
 export interface WorkHourRecord {
@@ -43,7 +46,7 @@ export interface DevOpsCommitMetadata {
 export interface DevOpsProvider {
   readonly name: string;
   fetchProjects(): Promise<DevOpsProject[]>;
-  fetchTasks(projectCode: string, type: DevOpsTaskType): Promise<DevOpsTask[]>;
+  fetchTasks(type: DevOpsTaskType): Promise<DevOpsTask[]>;
   testConnection(): Promise<boolean>;
   // @AI-Begin A1B2C 20260518 @@cc
   fetchWorkHours?(taskId: string): Promise<WorkHourRecord[]>;

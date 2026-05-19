@@ -1,0 +1,1629 @@
+(function(){
+        var N=null,
+        $0="WshFERz",
+        $1="电子会计档案系统",
+        $2="公共区域",
+        $3="电子会计档案4.7.0",
+        $4="gdmcb3.1.0",
+        $5="常规需求",
+        $6="8702868297570",
+        $7="WstVqPo",
+        $8="5254253069282",
+        $9="FwwRYVb",
+        $a="以旧换新公共服务平台",
+        $b="插件测试任务",
+        $c="reSHXSF",
+        $d="1684453404467208194",
+        $e=2.0,
+        $f="executeUser7770$1684453404467208194",
+        $g="1684110186388271106",
+        $h="2026-05-30",
+        $i="New",
+        $j="Task",
+        $k="刘宽宽",
+        $l="编码工作",
+        $m=24.0,
+        $n="#f9d90f",
+        $o="公共项目",
+        $p="all",
+        $q="2026-06-30",
+        $r="2026-04-30",
+        $s=16.0,
+        $t="4997595331313",
+        $u="处理中",
+        $v="DevPro",
+        $w="以旧换新公共服务平台项目",
+        $x="2026-05-23",
+        $y="电子会计档案",
+        $z="电子化软件开发",
+        $A="Processing",
+        $B="7169092246450",
+        $C="2026-05-18",
+        $D="电子会计档案4.6.0",
+        $E="9710832691809",
+        $F="2026-05-18",
+        $G=false,
+        $H="50%",
+        $I="#80bdf9",
+        $J=0.0,
+        $K=8.0,
+        $L="asbdbfkwef",
+        $M="2026-05-16",
+        data=[
+            [
+                ,
+                ,
+                ,
+                ,
+                $l,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $M,
+                $k,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $b,
+                ,
+                ,
+                ,
+                $o,
+                2,
+                ,
+                ,
+                ,
+                $G,
+                "1%",
+                ,
+                ,
+                ,
+                $d,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                $d,
+                $x,
+                "中",
+                ,
+                ,
+                ,
+                ,
+                0,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $u,
+                $a,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                $j,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "3",
+                ,
+                $v,
+                ,
+                ,
+                1,
+                $2,
+                "3",
+                ,
+                ,
+                "轻微",
+                ,
+                ,
+                $w,
+                ,
+                ,
+                $4,
+                $I,
+                ,
+                ,
+                ,
+                ,
+                $K,
+                ,
+                "是",
+                1,
+                "9945689938641",
+                ,
+                ,
+                "1",
+                "任务",
+                ,
+                ,
+                $k,
+                ,
+                ,
+                [],
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $5,
+                "一般",
+                $J,
+                ,
+                $k,
+                ,
+                $k,
+                2,
+                ,
+                ,
+                ,
+                $A,
+                ,
+                ,
+                $C,
+                ,
+                ,
+                ,
+                $7,
+                ,
+                ,
+                "26038518",
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                ,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                "2",
+                $G,
+                $d,
+                ,
+                $e,
+                $6,
+                "0",
+                ,
+                ,
+                ,
+                ,
+                ,
+                [],
+                ,
+                $8,
+                $A,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $L,
+                $f,
+                ,
+                ,
+                ,
+                $0,
+                ,
+                $p,
+                ,
+                $x,
+                $n,
+                ,
+                0,
+                ,
+                2,
+            ],
+            [
+                ,
+                "电子会计档案V4.7.0:02-系统开发",
+                ,
+                ,
+                $l,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $r,
+                $k,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $E,
+                ,
+                "【V4.7档案利用优化】档案查询及借阅记录查询、下载日志-全栈",
+                ,
+                ,
+                ,
+                $o,
+                2,
+                ,
+                ,
+                ,
+                $G,
+                $H,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                $d,
+                $h,
+                "中",
+                ,
+                ,
+                ,
+                ,
+                1,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $u,
+                $y,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                $j,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "3",
+                ,
+                $v,
+                ,
+                ,
+                1,
+                $2,
+                "3",
+                ,
+                ,
+                "轻微",
+                ,
+                $H,
+                $z,
+                $3,
+                ,
+                $D,
+                $I,
+                ,
+                ,
+                ,
+                ,
+                $s,
+                ,
+                "是",
+                1,
+                "9942470122194",
+                ,
+                ,
+                "1",
+                "任务",
+                $1,
+                ,
+                $k,
+                ,
+                ,
+                [
+                    "9909845351026"
+                ],
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $5,
+                "一般",
+                $K,
+                "简单",
+                $k,
+                ,
+                $k,
+                2,
+                ,
+                ,
+                ,
+                $A,
+                ,
+                ,
+                $r,
+                ,
+                ,
+                ,
+                $c,
+                ,
+                ,
+                "26038108",
+                $B,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "2026-05-18",
+                ,
+                "全栈任务",
+                ,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                ,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                "2",
+                $G,
+                $d,
+                ,
+                $e,
+                $t,
+                "0",
+                ,
+                ,
+                ,
+                ,
+                ,
+                [],
+                ,
+                $8,
+                $A,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $L,
+                $f,
+                ,
+                ,
+                ,
+                $9,
+                ,
+                $p,
+                "1",
+                $q,
+                $n,
+                ,
+                0,
+                ,
+                2,
+            ],
+            [
+                ,
+                ,
+                ,
+                ,
+                $l,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $r,
+                $k,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $E,
+                ,
+                "【V4.7档案利用优化】档案查询及借阅记录查询、下载日志",
+                ,
+                ,
+                ,
+                $o,
+                2,
+                ,
+                ,
+                ,
+                $G,
+                $H,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                $d,
+                $h,
+                "中",
+                ,
+                ,
+                ,
+                ,
+                2,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $u,
+                $y,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                $j,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "3",
+                ,
+                $v,
+                ,
+                ,
+                1,
+                $2,
+                "3",
+                ,
+                ,
+                "轻微",
+                ,
+                $H,
+                $z,
+                $3,
+                ,
+                $D,
+                $I,
+                ,
+                ,
+                ,
+                ,
+                $s,
+                ,
+                "是",
+                1,
+                "9942434306130",
+                ,
+                ,
+                "1",
+                "任务",
+                $1,
+                ,
+                $k,
+                ,
+                ,
+                [],
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $5,
+                "一般",
+                $K,
+                "简单",
+                $k,
+                ,
+                "段武",
+                2,
+                ,
+                ,
+                ,
+                $A,
+                ,
+                ,
+                $r,
+                ,
+                ,
+                ,
+                $c,
+                ,
+                ,
+                "26038107",
+                $B,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                ,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                "2",
+                $G,
+                $g,
+                ,
+                5.0,
+                $t,
+                "0",
+                ,
+                ,
+                ,
+                ,
+                ,
+                [],
+                ,
+                $8,
+                $A,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $L,
+                $f,
+                ,
+                ,
+                ,
+                $9,
+                ,
+                $p,
+                "1",
+                $q,
+                $n,
+                ,
+                0,
+                ,
+                2,
+            ],
+            [
+                ,
+                ,
+                ,
+                ,
+                $l,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $C,
+                $k,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $E,
+                ,
+                "【V4.7档案借阅优化】档案借阅支持一次借阅多份文件",
+                ,
+                ,
+                ,
+                $o,
+                2,
+                ,
+                ,
+                ,
+                $G,
+                "0%",
+                ,
+                ,
+                ,
+                $d,
+                ,
+                $F,
+                ,
+                ,
+                ,
+                $d,
+                $q,
+                "中",
+                ,
+                ,
+                ,
+                ,
+                2,
+                "借阅申请",
+                ,
+                ,
+                ,
+                ,
+                "新增",
+                $y,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                $j,
+                "7169092248501",
+                ,
+                ,
+                ,
+                ,
+                ,
+                "3",
+                ,
+                $v,
+                ,
+                ,
+                1,
+                $2,
+                "3",
+                ,
+                ,
+                "轻微",
+                ,
+                "0%",
+                $z,
+                $3,
+                ,
+                "方案/市场需求",
+                $I,
+                ,
+                ,
+                ,
+                ,
+                $m,
+                ,
+                "是",
+                1,
+                "9941123901138",
+                ,
+                ,
+                "1",
+                "任务",
+                $1,
+                ,
+                $k,
+                ,
+                ,
+                [],
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $5,
+                "一般",
+                $m,
+                "简单",
+                $k,
+                ,
+                "段武",
+                2,
+                ,
+                ,
+                ,
+                $i,
+                ,
+                ,
+                "2026-05-06",
+                ,
+                ,
+                ,
+                $c,
+                ,
+                ,
+                "26037932",
+                $B,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $F,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                ,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                "2",
+                $G,
+                $g,
+                ,
+                $J,
+                "6017403299681",
+                "0",
+                ,
+                ,
+                ,
+                ,
+                ,
+                [],
+                ,
+                $8,
+                $i,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $L,
+                $f,
+                ,
+                ,
+                ,
+                $9,
+                ,
+                $p,
+                "1",
+                "2026-05-22",
+                "#539aff",
+                ,
+                0,
+                ,
+                2,
+            ],
+            [
+                ,
+                ,
+                ,
+                ,
+                $l,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $M,
+                $k,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $b,
+                ,
+                ,
+                ,
+                $o,
+                2,
+                ,
+                ,
+                ,
+                $G,
+                "91%",
+                ,
+                ,
+                ,
+                $d,
+                ,
+                "2026-05-16",
+                ,
+                ,
+                ,
+                $d,
+                $x,
+                "中",
+                ,
+                ,
+                ,
+                ,
+                0,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $u,
+                $a,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                $j,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "3",
+                ,
+                $v,
+                ,
+                ,
+                1,
+                $2,
+                "3",
+                ,
+                ,
+                "轻微",
+                ,
+                ,
+                $w,
+                ,
+                ,
+                $4,
+                $I,
+                ,
+                ,
+                ,
+                ,
+                $K,
+                ,
+                "是",
+                1,
+                "9921592096081",
+                ,
+                ,
+                "1",
+                "任务",
+                ,
+                ,
+                $k,
+                ,
+                ,
+                [],
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $5,
+                "一般",
+                $J,
+                ,
+                $k,
+                ,
+                $k,
+                2,
+                ,
+                ,
+                ,
+                $A,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $7,
+                ,
+                ,
+                "26037689",
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                "2026-05-18",
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $d,
+                ,
+                ,
+                $J,
+                ,
+                ,
+                ,
+                ,
+                "2",
+                $G,
+                $d,
+                ,
+                5.1,
+                $6,
+                "0",
+                ,
+                ,
+                ,
+                ,
+                ,
+                [],
+                ,
+                $8,
+                $A,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                $L,
+                $f,
+                ,
+                ,
+                ,
+                $0,
+                ,
+                $p,
+                ,
+                $x,
+                $n,
+                ,
+                0,
+                ,
+                2,
+            ],
+        ],
+        rs=[];function dd(d){
+            return{
+                'implementExecutor': d[
+                    0
+                ],
+                'planName': d[
+                    1
+                ],
+                'storyCheckResult': d[
+                    2
+                ],
+                'implementPlanDate': d[
+                    3
+                ],
+                'taskWorkItemCatalogName': d[
+                    4
+                ],
+                'planDetailId': d[
+                    5
+                ],
+                'problemRecorder': d[
+                    6
+                ],
+                'developDealerName': d[
+                    7
+                ],
+                'taskRemark': d[
+                    8
+                ],
+                'groupTaskSumWorkHour': d[
+                    9
+                ],
+                'planStartTime': d[
+                    10
+                ],
+                'executeUserName': d[
+                    11
+                ],
+                'opsPresentDept': d[
+                    12
+                ],
+                'taskAttachIds': d[
+                    13
+                ],
+                'presenterPhone': d[
+                    14
+                ],
+                'bugSourceName': d[
+                    15
+                ],
+                'envName': d[
+                    16
+                ],
+                'implementStatusName': d[
+                    17
+                ],
+                'solveAppVersionId': d[
+                    18
+                ],
+                'bugStoryId': d[
+                    19
+                ],
+                'taskName': d[
+                    20
+                ],
+                'presenterOrgTypeId': d[
+                    21
+                ],
+                'storyType': d[
+                    22
+                ],
+                'storyCheckResultName': d[
+                    23
+                ],
+                'opsprojName': d[
+                    24
+                ],
+                'isDeleted': d[
+                    25
+                ],
+                'groupTaskSumPlanTime': d[
+                    26
+                ],
+                'mofDivId': d[
+                    27
+                ],
+                'groupTaskCountValue': d[
+                    28
+                ],
+                'isHasChild': d[
+                    29
+                ],
+                'completion': d[
+                    30
+                ],
+                'endAppVersionName': d[
+                    31
+                ],
+                'clientId': d[
+                    32
+                ],
+                'createTestVersionName': d[
+                    33
+                ],
+                'updateUser': d[
+                    34
+                ],
+                'implementExecutorName': d[
+                    35
+                ],
+                'createTime': d[
+                    36
+                ],
+                'bugStoryName': d[
+                    37
+                ],
+                'interfaceId': d[
+                    38
+                ],
+                'developDealer': d[
+                    39
+                ],
+                'executeUser': d[
+                    40
+                ],
+                'ecDate': d[
+                    41
+                ],
+                'priorityName': d[
+                    42
+                ],
+                'endAppVersionId': d[
+                    43
+                ],
+                'menuName': d[
+                    44
+                ],
+                'operationReasonName': d[
+                    45
+                ],
+                'implementStatus': d[
+                    46
+                ],
+                'isRelatedTask': d[
+                    47
+                ],
+                'pageName': d[
+                    48
+                ],
+                'taskWorkhourTypeName': d[
+                    49
+                ],
+                'taskCatalogName': d[
+                    50
+                ],
+                'expectVersion': d[
+                    51
+                ],
+                'appId': d[
+                    52
+                ],
+                'tasktypeStatusName': d[
+                    53
+                ],
+                'prodName': d[
+                    54
+                ],
+                'testWorkload': d[
+                    55
+                ],
+                'needPrototypeDesignName': d[
+                    56
+                ],
+                'problemRecorderName': d[
+                    57
+                ],
+                'developStatusName': d[
+                    58
+                ],
+                'coordinationUsers': d[
+                    59
+                ],
+                'tasktypeCode': d[
+                    60
+                ],
+                'pageId': d[
+                    61
+                ],
+                'interfaceCatalogId': d[
+                    62
+                ],
+                'storySourceName': d[
+                    63
+                ],
+                'createTestVersionId': d[
+                    64
+                ],
+                'webServerId': d[
+                    65
+                ],
+                'projectName': d[
+                    66
+                ],
+                'taskWorkItemCatalog': d[
+                    67
+                ],
+                'bugReasonName': d[
+                    68
+                ],
+                'projectId': d[
+                    69
+                ],
+                'patchBuildTag': d[
+                    70
+                ],
+                'createAppVersionId': d[
+                    71
+                ],
+                'importance': d[
+                    72
+                ],
+                'regionName': d[
+                    73
+                ],
+                'workSource': d[
+                    74
+                ],
+                'bugSourceUserName': d[
+                    75
+                ],
+                'taskFunctionsName': d[
+                    76
+                ],
+                'bugLevelName': d[
+                    77
+                ],
+                'codeId': d[
+                    78
+                ],
+                'completionName': d[
+                    79
+                ],
+                'devprojName': d[
+                    80
+                ],
+                'solveAppVersionName': d[
+                    81
+                ],
+                'developPlanDate': d[
+                    82
+                ],
+                'prodVersionName': d[
+                    83
+                ],
+                'tasktypeColor': d[
+                    84
+                ],
+                'appName': d[
+                    85
+                ],
+                'syncrStatusName': d[
+                    86
+                ],
+                'bugSourceUser': d[
+                    87
+                ],
+                'consignStandard': d[
+                    88
+                ],
+                'planTaskTime': d[
+                    89
+                ],
+                'closeDate': d[
+                    90
+                ],
+                'isStoryVerifyName': d[
+                    91
+                ],
+                'bugLevel': d[
+                    92
+                ],
+                'taskId': d[
+                    93
+                ],
+                'solveDate': d[
+                    94
+                ],
+                'consignResult': d[
+                    95
+                ],
+                'isStoryVerify': d[
+                    96
+                ],
+                'tasktypeName': d[
+                    97
+                ],
+                'moduleName': d[
+                    98
+                ],
+                'topMenuId': d[
+                    99
+                ],
+                'createUserName': d[
+                    100
+                ],
+                'interfaceCatalogName': d[
+                    101
+                ],
+                'patchCode': d[
+                    102
+                ],
+                'hotspotIds': d[
+                    103
+                ],
+                'taskAttachV3s': d[
+                    104
+                ],
+                'implementDealer': d[
+                    105
+                ],
+                'bugSolutionName': d[
+                    106
+                ],
+                'menuId': d[
+                    107
+                ],
+                'planId': d[
+                    108
+                ],
+                'solveServerIntegrageVersionName': d[
+                    109
+                ],
+                'bugSource': d[
+                    110
+                ],
+                'workSourceName': d[
+                    111
+                ],
+                'importanceName': d[
+                    112
+                ],
+                'proWorkload': d[
+                    113
+                ],
+                'storyComplexName': d[
+                    114
+                ],
+                'updateUserName': d[
+                    115
+                ],
+                'envId': d[
+                    116
+                ],
+                'presenterName': d[
+                    117
+                ],
+                'priority': d[
+                    118
+                ],
+                'planDetailIds': d[
+                    119
+                ],
+                'parentName': d[
+                    120
+                ],
+                'qualityEvaluation': d[
+                    121
+                ],
+                'tasktypeStatusCode': d[
+                    122
+                ],
+                'groupTaskCount': d[
+                    123
+                ],
+                'prodOperator': d[
+                    124
+                ],
+                'proposeDate': d[
+                    125
+                ],
+                'clientName': d[
+                    126
+                ],
+                'hotspot': d[
+                    127
+                ],
+                'serverName': d[
+                    128
+                ],
+                'prodId': d[
+                    129
+                ],
+                'needPrototypeDesign': d[
+                    130
+                ],
+                'patchId': d[
+                    131
+                ],
+                'taskNo': d[
+                    132
+                ],
+                'moduleId': d[
+                    133
+                ],
+                'regionTaskNo': d[
+                    134
+                ],
+                'qualityEvaluationName': d[
+                    135
+                ],
+                'bugSolution': d[
+                    136
+                ],
+                'createAppVersionName': d[
+                    137
+                ],
+                'developExecutorName': d[
+                    138
+                ],
+                'endRemark': d[
+                    139
+                ],
+                'webServerName': d[
+                    140
+                ],
+                'updateTime': d[
+                    141
+                ],
+                'parentId': d[
+                    142
+                ],
+                'hotspotName': d[
+                    143
+                ],
+                'monthlyName': d[
+                    144
+                ],
+                'createServerIntegrageVersionId': d[
+                    145
+                ],
+                'relateTaskIds': d[
+                    146
+                ],
+                'createFormalVersionName': d[
+                    147
+                ],
+                'createUser': d[
+                    148
+                ],
+                'problemId': d[
+                    149
+                ],
+                'taskCatalog': d[
+                    150
+                ],
+                'devWorkload': d[
+                    151
+                ],
+                'opsPresenter': d[
+                    152
+                ],
+                'createServerIntegrageVersionName': d[
+                    153
+                ],
+                'serverId': d[
+                    154
+                ],
+                'solveServerIntegrageVersionId': d[
+                    155
+                ],
+                'isFollowWithInterest': d[
+                    156
+                ],
+                'checked': d[
+                    157
+                ],
+                'presenter': d[
+                    158
+                ],
+                'problemNo': d[
+                    159
+                ],
+                'executeTaskTime': d[
+                    160
+                ],
+                'prodVersionId': d[
+                    161
+                ],
+                'syncrStatus': d[
+                    162
+                ],
+                'taskWorkhourType': d[
+                    163
+                ],
+                'bugReason': d[
+                    164
+                ],
+                'monthly': d[
+                    165
+                ],
+                'operationReason': d[
+                    166
+                ],
+                'taskFunctions': d[
+                    167
+                ],
+                'coordinationUserIds': d[
+                    168
+                ],
+                'developStatus': d[
+                    169
+                ],
+                'opsprojId': d[
+                    170
+                ],
+                'tasktypeStatusId': d[
+                    171
+                ],
+                'storyCatalogName': d[
+                    172
+                ],
+                'developExecutor': d[
+                    173
+                ],
+                'remark': d[
+                    174
+                ],
+                'storySource': d[
+                    175
+                ],
+                'createFormalVersionId': d[
+                    176
+                ],
+                'createVendorOrgId': d[
+                    177
+                ],
+                'interfaceName': d[
+                    178
+                ],
+                'tasktypeId': d[
+                    179
+                ],
+                'groupFieldId': d[
+                    180
+                ],
+                'storyCatalog': d[
+                    181
+                ],
+                'storyTypeName': d[
+                    182
+                ],
+                'comments': d[
+                    183
+                ],
+                'devprojId': d[
+                    184
+                ],
+                'groupTaskSumCompletion': d[
+                    185
+                ],
+                'regionId': d[
+                    186
+                ],
+                'storyComplex': d[
+                    187
+                ],
+                'planEndTime': d[
+                    188
+                ],
+                'tasktypeStatusColor': d[
+                    189
+                ],
+                'createVendorOrgName': d[
+                    190
+                ],
+                'dispOrder': d[
+                    191
+                ],
+                'implementDealerName': d[
+                    192
+                ],
+                'isRelationProblem': d[
+                    193
+                ],
+                'presentDate': d[
+                    194
+                ],
+            }
+        };for(var i=0;i<5;i++){
+            rs.push(dd(data[
+                i
+            ]))
+        };return rs;
+    })(),
