@@ -92,7 +92,7 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
   async fetchTasks(type: DevOpsTaskType): Promise<DevOpsTask[]> {
     const session = await this.getSession();
     const groupValue = `executeUser7770$${session.userId}`;
-    const response = await fetchJson<unknown[]>(
+    const raw = await fetchJson<unknown>(
       this.name,
       `${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/loadTaskListWithGroup`,
       {
@@ -128,7 +128,8 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
       }
     );
 
-    return response
+    const arr = Array.isArray(raw) ? raw : (raw as { data?: unknown[] }).data ?? [];
+    return arr
       .map((item) => this.toTask(item as Record<string, unknown>, type))
       .filter((task) => task.code && task.title);
   }

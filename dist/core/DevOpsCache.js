@@ -18,9 +18,9 @@ class DevOpsCache {
         return this.projects;
     }
     // @AI-Begin T8K2M 20260518 @@cc
-    async getTasks(provider, projectCode, type) {
-        const key = `${projectCode}:${type}`;
-        const items = await provider.fetchTasks(projectCode, type);
+    async getTasks(provider, type) {
+        const key = `${type}`;
+        const items = await provider.fetchTasks(type);
         this.tasks.set(key, { cachedAt: Date.now(), items });
         return items;
     }

@@ -41,7 +41,7 @@ class CompanyDevOpsAdapter {
     async fetchTasks(type) {
         const session = await this.getSession();
         const groupValue = `executeUser7770$${session.userId}`;
-        const response = await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/loadTaskListWithGroup`, {
+        const raw = await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/query/loadTaskListWithGroup`, {
             method: 'POST',
             timeoutMs: this.options.timeoutMs,
             headers: {
@@ -72,7 +72,8 @@ class CompanyDevOpsAdapter {
                 groupTaskCount: 5
             })
         });
-        return response
+        const arr = Array.isArray(raw) ? raw : raw.data ?? [];
+        return arr
             .map((item) => this.toTask(item, type))
             .filter((task) => task.code && task.title);
     }
