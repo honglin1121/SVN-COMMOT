@@ -2,7 +2,7 @@
   "name": "issue-link-push",
   "displayName": "Issue Link Push",
   "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "lkk-vscode-2136",
   "author": {
     "name": "LKK",
