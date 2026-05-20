@@ -137,7 +137,7 @@ async function runCommitAndPush(config, cache) {
             vscode.window.showWarningMessage('当前没有已暂存的改动。请先 git add 暂存要提交的文件。');
             return;
         }
-        const pushTarget = await resolvePushTarget(cwd, repository);
+        const pushTarget = await resolvePushTarget(cwd, repository, false);
         if (!pushTarget) {
             return;
         }
@@ -222,9 +222,9 @@ async function pushAndRecordHours(options) {
 }
 // @AI-End H0I1J 20260520 @@cc
 // @AI-Begin P2Q4R 20260520 @@cc
-async function resolvePushTarget(cwd, repository) {
+async function resolvePushTarget(cwd, repository, requireUnpushedCommits = true) {
     const state = await (0, AmendStrategy_1.checkBranchState)(cwd);
-    if (!state.hasUnpushedCommits) {
+    if (requireUnpushedCommits && !state.hasUnpushedCommits) {
         vscode.window.showWarningMessage('当前没有未推送的 commit。');
         return null;
     }

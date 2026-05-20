@@ -125,7 +125,7 @@ async function runCommitAndPush(config: ExtensionConfig, cache: DevOpsCache): Pr
       return;
     }
 
-    const pushTarget = await resolvePushTarget(cwd, repository);
+    const pushTarget = await resolvePushTarget(cwd, repository, false);
     if (!pushTarget) {
       return;
     }
@@ -252,10 +252,10 @@ async function pushAndRecordHours(options: PushAndRecordOptions): Promise<void> 
 // @AI-End H0I1J 20260520 @@cc
 
 // @AI-Begin P2Q4R 20260520 @@cc
-async function resolvePushTarget(cwd: string, repository: Repository): Promise<PushTarget | null> {
+async function resolvePushTarget(cwd: string, repository: Repository, requireUnpushedCommits = true): Promise<PushTarget | null> {
   const state = await checkBranchState(cwd);
 
-  if (!state.hasUnpushedCommits) {
+  if (requireUnpushedCommits && !state.hasUnpushedCommits) {
     vscode.window.showWarningMessage('当前没有未推送的 commit。');
     return null;
   }
