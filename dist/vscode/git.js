@@ -33,9 +33,38 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCurrentBranchName = getCurrentBranchName;
+exports.listRemotes = listRemotes;
+exports.getUpstreamInfo = getUpstreamInfo;
 exports.getGitApi = getGitApi;
 exports.pickRepository = pickRepository;
+const cp = __importStar(require("node:child_process"));
+const util = __importStar(require("node:util"));
 const vscode = __importStar(require("vscode"));
+const execFile = util.promisify(cp.execFile);
+// @AI-Begin K7M2N 20260520 @@cc
+function getCurrentBranchName(repository) {
+    return repository.state.HEAD?.name;
+}
+async function listRemotes(cwd) {
+    const { stdout } = await execFile('git', ['remote'], { cwd });
+    return stdout.trim().split('\n').filter(Boolean);
+}
+async function getUpstreamInfo(cwd) {
+    try {
+        const { stdout } = await execFile('git', ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], { cwd });
+        const ref = stdout.trim();
+        const parts = ref.split('/');
+        if (parts.length >= 2) {
+            return { remote: parts[0], branch: parts.slice(1).join('/') };
+        }
+        return null;
+    }
+    catch {
+        return null;
+    }
+}
+// @AI-End K7M2N 20260520 @@cc
 async function getGitApi() {
     const extension = vscode.extensions.getExtension('vscode.git');
     if (!extension) {

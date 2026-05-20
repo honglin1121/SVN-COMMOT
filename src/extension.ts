@@ -1,10 +1,14 @@
+import * as cp from 'node:child_process';
+import * as util from 'node:util';
 import * as vscode from 'vscode';
 import { DevOpsCache } from './core/DevOpsCache';
 import { ConfigManager, ExtensionConfig } from './vscode/ConfigManager';
-import { AmendStrategy } from './vscode/AmendStrategy';
-import { getGitApi, pickRepository } from './vscode/git';
+import { AmendStrategy, checkBranchState } from './vscode/AmendStrategy';
+import { getGitApi, getCurrentBranchName, listRemotes, pickRepository, Repository } from './vscode/git';
 import { createProvider } from './vscode/providerFactory';
 import { collectDevOpsCommitMetadata } from './vscode/QuickPickFlow';
+
+const execFile = util.promisify(cp.execFile);
 
 export function activate(context: vscode.ExtensionContext): void {
   const configManager = new ConfigManager(context.secrets);
@@ -40,6 +44,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(): void { }
 
+// @AI-Begin D8E4F 20260520 @@cc
+interface PushTarget {
+  hasUpstream: boolean;
+  remoteName?: string;
+  branchName?: string;
+}
+// @AI-End D8E4F 20260520 @@cc
+
 async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCache): Promise<void> {
   try {
     const git = await getGitApi();
@@ -49,13 +61,22 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
       return;
     }
 
+    const cwd = repository.rootUri.fsPath;
+
+    // @AI-Begin F1G3H 20260520 @@cc
+    const pushTarget = await resolvePushTarget(cwd, repository);
+    if (!pushTarget) {
+      return;
+    }
+    // @AI-End F1G3H 20260520 @@cc
+
     const provider = createProvider(config);
     const metadata = await collectDevOpsCommitMetadata(provider, cache, config.commitTemplate);
     if (!metadata) {
       return;
     }
 
-    const strategy = new AmendStrategy(repository);
+    const strategy = new AmendStrategy(cwd);
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -65,14 +86,26 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
       () => strategy.apply(metadata, config.commitTemplate)
     );
 
-    await vscode.window.withProgress(
-      {
-        location: vscode.ProgressLocation.Notification,
-        title: '正在推送代码',
-        cancellable: false
-      },
-      () => repository.push()
-    );
+    // @AI-Begin J5K6L 20260520 @@cc
+    try {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: '正在推送代码',
+          cancellable: false
+        },
+        () => {
+          if (pushTarget.hasUpstream) {
+            return repository.push();
+          }
+          return repository.push(pushTarget.remoteName, pushTarget.branchName, true);
+        }
+      );
+    } catch (pushError) {
+      await recoverAmend(cwd);
+      throw pushError;
+    }
+    // @AI-End J5K6L 20260520 @@cc
 
     // @AI-Begin M9N0P 20260518 @@cc
     const createTime = new Date().toISOString().split('T')[0];
@@ -124,3 +157,72 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
     vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
   }
 }
+
+// @AI-Begin P2Q4R 20260520 @@cc
+async function resolvePushTarget(cwd: string, repository: Repository): Promise<PushTarget | null> {
+  const state = await checkBranchState(cwd);
+
+  if (!state.hasUnpushedCommits) {
+    vscode.window.showWarningMessage('当前没有未推送的 commit。');
+    return null;
+  }
+
+  if (state.hasUpstream) {
+    return { hasUpstream: true };
+  }
+
+  const remotes = await listRemotes(cwd);
+  if (remotes.length === 0) {
+    vscode.window.showErrorMessage('当前仓库没有配置 remote，请先执行 git remote add 添加远程仓库。');
+    return null;
+  }
+
+  let remoteName: string;
+  if (remotes.length === 1) {
+    remoteName = remotes[0];
+  } else {
+    const picked = await vscode.window.showQuickPick(
+      remotes.map((r) => ({ label: r })),
+      { placeHolder: '当前分支没有 upstream，请选择要推送到的远程仓库' }
+    );
+    if (!picked) {
+      return null;
+    }
+    remoteName = picked.label;
+  }
+
+  const localBranch = getCurrentBranchName(repository) ?? 'main';
+
+  const remoteBranch = await vscode.window.showInputBox({
+    prompt: `将推送到 ${remoteName}，请输入远程分支名`,
+    value: localBranch,
+    validateInput: (value) => {
+      if (!value.trim()) {
+        return '远程分支名不能为空';
+      }
+      return null;
+    }
+  });
+  if (!remoteBranch) {
+    return null;
+  }
+
+  return {
+    hasUpstream: false,
+    remoteName,
+    branchName: remoteBranch.trim()
+  };
+}
+
+async function recoverAmend(cwd: string): Promise<void> {
+  try {
+    const { stdout } = await execFile('git', ['rev-parse', 'HEAD@{1}'], { cwd });
+    const prevCommit = stdout.trim();
+    if (prevCommit) {
+      await execFile('git', ['reset', '--soft', 'HEAD@{1}'], { cwd });
+    }
+  } catch {
+    // 恢复失败不掩盖原始错误
+  }
+}
+// @AI-End P2Q4R 20260520 @@cc

@@ -34,37 +34,55 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AmendStrategy = void 0;
+exports.checkBranchState = checkBranchState;
 const cp = __importStar(require("node:child_process"));
 const util = __importStar(require("node:util"));
 const DevOpsCommitFormatter_1 = require("../core/DevOpsCommitFormatter");
 const execFile = util.promisify(cp.execFile);
+// @AI-End A3B5D 20260520 @@cc
 class AmendStrategy {
-    repository;
-    constructor(repository) {
-        this.repository = repository;
+    cwd;
+    constructor(cwd) {
+        this.cwd = cwd;
     }
     async apply(metadata, template) {
-        const cwd = this.repository.rootUri.fsPath;
-        await ensureHasUnpushedCommit(cwd);
+        const state = await checkBranchState(this.cwd);
+        if (!state.hasUnpushedCommits) {
+            throw new Error('当前没有未推送的 commit 可修改。');
+        }
         const nextMessage = (0, DevOpsCommitFormatter_1.formatDevOpsCommitMetadata)(template, metadata);
         validateCommitMessage(nextMessage);
-        await execFile('git', ['commit', '--amend', '--only', '-m', nextMessage], { cwd });
+        await execFile('git', ['commit', '--amend', '--only', '-m', nextMessage], { cwd: this.cwd });
     }
 }
 exports.AmendStrategy = AmendStrategy;
-async function ensureHasUnpushedCommit(cwd) {
+// @AI-Begin R7S2T 20260520 @@cc
+async function checkBranchState(cwd) {
     const upstream = await execFile('git', ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], { cwd })
         .then((result) => result.stdout.trim())
         .catch(() => undefined);
-    if (!upstream) {
-        throw new Error('当前分支没有 upstream。请先设置远端分支后再关联 DevOps 信息。');
+    let hasUnpushedCommits = false;
+    if (upstream) {
+        const { stdout } = await execFile('git', ['rev-list', '--count', `${upstream}..HEAD`], { cwd });
+        const count = Number(stdout.trim());
+        hasUnpushedCommits = Number.isFinite(count) && count > 0;
     }
-    const { stdout } = await execFile('git', ['rev-list', '--count', `${upstream}..HEAD`], { cwd });
-    const count = Number(stdout.trim());
-    if (!Number.isFinite(count) || count <= 0) {
-        throw new Error('当前没有未推送的 commit 可修改。');
+    else {
+        try {
+            await execFile('git', ['rev-parse', 'HEAD'], { cwd });
+            hasUnpushedCommits = true;
+        }
+        catch {
+            hasUnpushedCommits = false;
+        }
     }
+    return {
+        hasUpstream: !!upstream,
+        upstream,
+        hasUnpushedCommits
+    };
 }
+// @AI-End R7S2T 20260520 @@cc
 function validateCommitMessage(message) {
     if (message.length < 10) {
         throw new Error('commit message 不能少于 10 个字符。');
@@ -76,7 +94,7 @@ function validateCommitMessage(message) {
         throw new Error('commit message 必须包含小写指令 scrum -e。');
     }
     if (!/^(feat|fix|perf|refactor|test|style|build|chore|upd|doc):/i.test(message) && !/^Merge\s/.test(message)) {
-        throw new Error('commit message 必须以合法 type 开头，Merge 操作必须以 “Merge ” 开头。');
+        throw new Error('commit message 必须以合法 type 开头，Merge 操作必须以 "Merge " 开头。');
     }
 }
 //# sourceMappingURL=AmendStrategy.js.map
