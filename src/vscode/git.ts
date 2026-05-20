@@ -49,6 +49,17 @@ export async function getUpstreamInfo(cwd: string): Promise<UpstreamInfo | null>
     return null;
   }
 }
+
+// @AI-Begin Y9Z0A 20260520 @@cc
+export async function hasStagedChanges(cwd: string): Promise<boolean> {
+  try {
+    await execFile('git', ['diff', '--cached', '--quiet'], { cwd });
+    return false;
+  } catch {
+    return true;
+  }
+}
+// @AI-End Y9Z0A 20260520 @@cc
 // @AI-End K7M2N 20260520 @@cc
 
 export async function getGitApi(): Promise<GitApi> {

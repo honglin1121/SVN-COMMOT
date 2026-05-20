@@ -33,6 +33,7 @@
   ],
   "activationEvents": [
     "onCommand:issueLinkPush.submitWithDevOpsTask",
+    "onCommand:issueLinkPush.commitAndPush",
     "onCommand:issueLinkPush.initializeDevOps",
     "onCommand:issueLinkPush.clearCache",
     "onStartupFinished"
@@ -57,12 +58,22 @@
         "title": "\u6e05\u9664 DevOps \u7f13\u5b58",
         "category": "Issue Link Push",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "issueLinkPush.commitAndPush",
+        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u5e76\u63d0\u4ea4\u63a8\u9001",
+        "category": "Issue Link Push",
+        "icon": "$(git-commit)"
       }
     ],
     "menus": {
       "scm/title": [
         {
           "command": "issueLinkPush.submitWithDevOpsTask",
+          "group": "navigation"
+        },
+        {
+          "command": "issueLinkPush.commitAndPush",
           "group": "navigation"
         }
       ],
@@ -75,6 +86,9 @@
         },
         {
           "command": "issueLinkPush.clearCache"
+        },
+        {
+          "command": "issueLinkPush.commitAndPush"
         }
       ]
     },

@@ -1,10 +1,13 @@
 # Changelog
 
+## 0.3.1 (2026-05-20)
+- 新增「关联 DevOps 任务并提交推送」命令（`commitAndPush`），支持新建 commit + 推送的一站式流程
 ## 0.3.0 (2026-05-20)
 
 - 兼容本地分支无远程 upstream 的场景，引导用户选择 remote 和分支名后自动 `push --set-upstream`
 - 支持多 remote 仓库的分支首次推送选择
 - 推送失败时自动撤销 commit amend，保护本地提交数据
+
 
 ## 0.2.0 (2026-05-19)
 

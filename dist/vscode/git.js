@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCurrentBranchName = getCurrentBranchName;
 exports.listRemotes = listRemotes;
 exports.getUpstreamInfo = getUpstreamInfo;
+exports.hasStagedChanges = hasStagedChanges;
 exports.getGitApi = getGitApi;
 exports.pickRepository = pickRepository;
 const cp = __importStar(require("node:child_process"));
@@ -64,6 +65,17 @@ async function getUpstreamInfo(cwd) {
         return null;
     }
 }
+// @AI-Begin Y9Z0A 20260520 @@cc
+async function hasStagedChanges(cwd) {
+    try {
+        await execFile('git', ['diff', '--cached', '--quiet'], { cwd });
+        return false;
+    }
+    catch {
+        return true;
+    }
+}
+// @AI-End Y9Z0A 20260520 @@cc
 // @AI-End K7M2N 20260520 @@cc
 async function getGitApi() {
     const extension = vscode.extensions.getExtension('vscode.git');

@@ -41,6 +41,7 @@ const vscode = __importStar(require("vscode"));
 const DevOpsCache_1 = require("./core/DevOpsCache");
 const ConfigManager_1 = require("./vscode/ConfigManager");
 const AmendStrategy_1 = require("./vscode/AmendStrategy");
+const DevOpsCommitFormatter_1 = require("./core/DevOpsCommitFormatter");
 const git_1 = require("./vscode/git");
 const providerFactory_1 = require("./vscode/providerFactory");
 const QuickPickFlow_1 = require("./vscode/QuickPickFlow");
@@ -71,7 +72,15 @@ function activate(context) {
         const config = await configManager.load();
         cache ??= new DevOpsCache_1.DevOpsCache(config.cacheTtlMs);
         await runSubmitWithDevOpsTask(config, cache);
-    }));
+    }), 
+    // @AI-Begin B6C7D 20260520 @@cc
+    vscode.commands.registerCommand('issueLinkPush.commitAndPush', async () => {
+        const config = await configManager.load();
+        cache ??= new DevOpsCache_1.DevOpsCache(config.cacheTtlMs);
+        await runCommitAndPush(config, cache);
+    })
+    // @AI-End B6C7D 20260520 @@cc
+    );
 }
 function deactivate() { }
 // @AI-End D8E4F 20260520 @@cc
@@ -101,55 +110,117 @@ async function runSubmitWithDevOpsTask(config, cache) {
             title: '正在写入 DevOps 信息到 commit',
             cancellable: false
         }, () => strategy.apply(metadata, config.commitTemplate));
-        // @AI-Begin J5K6L 20260520 @@cc
-        try {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: '正在推送代码',
-                cancellable: false
-            }, () => {
-                if (pushTarget.hasUpstream) {
-                    return repository.push();
-                }
-                return repository.push(pushTarget.remoteName, pushTarget.branchName, true);
-            });
-        }
-        catch (pushError) {
-            await recoverAmend(cwd);
-            throw pushError;
-        }
-        // @AI-End J5K6L 20260520 @@cc
-        // @AI-Begin M9N0P 20260518 @@cc
-        const createTime = new Date().toISOString().split('T')[0];
-        const spendTaskTime = Number(metadata.hours);
-        const dayCompletion = `${metadata.progress}%`;
-        const taskId = metadata.task.id || metadata.task.code;
-        if (metadata.todayWorkHour && provider.modifyWorkHour) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: '正在更新今日工时到 DevOps',
-                cancellable: false
-            }, async () => {
-                const workContent = metadata.todayWorkHour.workContent + '\n' + metadata.subject;
-                await provider.modifyWorkHour(metadata.todayWorkHour.taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent);
-            });
-        }
-        else if (provider.addWorkHour) {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: '正在登记工时到 DevOps',
-                cancellable: false
-            }, async () => {
-                await provider.addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, metadata.subject);
-            });
-        }
-        // @AI-End M9N0P 20260518 @@cc
-        vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
+        await pushAndRecordHours({
+            repository,
+            cwd,
+            pushTarget,
+            provider,
+            metadata,
+            onPushFailure: () => recoverAmend(cwd)
+        });
     }
     catch (error) {
         vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
     }
 }
+// @AI-Begin E8F9G 20260520 @@cc
+async function runCommitAndPush(config, cache) {
+    try {
+        const git = await (0, git_1.getGitApi)();
+        const repository = await (0, git_1.pickRepository)(git);
+        if (!repository) {
+            vscode.window.showWarningMessage('当前没有打开 Git 仓库。');
+            return;
+        }
+        const cwd = repository.rootUri.fsPath;
+        if (!(await (0, git_1.hasStagedChanges)(cwd))) {
+            vscode.window.showWarningMessage('当前没有已暂存的改动。请先 git add 暂存要提交的文件。');
+            return;
+        }
+        const pushTarget = await resolvePushTarget(cwd, repository);
+        if (!pushTarget) {
+            return;
+        }
+        const provider = (0, providerFactory_1.createProvider)(config);
+        const metadata = await (0, QuickPickFlow_1.collectDevOpsCommitMetadata)(provider, cache, config.commitTemplate);
+        if (!metadata) {
+            return;
+        }
+        const message = (0, DevOpsCommitFormatter_1.formatDevOpsCommitMetadata)(config.commitTemplate, metadata);
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: '正在提交代码',
+            cancellable: false
+        }, async () => {
+            await execFile('git', ['commit', '-m', message], { cwd });
+        });
+        await pushAndRecordHours({
+            repository,
+            cwd,
+            pushTarget,
+            provider,
+            metadata,
+            onPushFailure: () => recoverCommit(cwd)
+        });
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
+    }
+}
+async function recoverCommit(cwd) {
+    try {
+        await execFile('git', ['reset', '--soft', 'HEAD~1'], { cwd });
+    }
+    catch {
+        // 恢复失败不掩盖原始错误
+    }
+}
+async function pushAndRecordHours(options) {
+    const { repository, cwd, pushTarget, provider, metadata, onPushFailure } = options;
+    try {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: '正在推送代码',
+            cancellable: false
+        }, () => {
+            if (pushTarget.hasUpstream) {
+                return repository.push();
+            }
+            return repository.push(pushTarget.remoteName, pushTarget.branchName, true);
+        });
+    }
+    catch (pushError) {
+        await onPushFailure();
+        throw pushError;
+    }
+    // @AI-Begin M9N0P 20260518 @@cc
+    const createTime = new Date().toISOString().split('T')[0];
+    const spendTaskTime = Number(metadata.hours);
+    const dayCompletion = `${metadata.progress}%`;
+    const taskId = metadata.task.id || metadata.task.code;
+    if (metadata.todayWorkHour && provider.modifyWorkHour) {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: '正在更新今日工时到 DevOps',
+            cancellable: false
+        }, async () => {
+            const workContent = metadata.todayWorkHour.workContent + '\n' + metadata.subject;
+            await provider.modifyWorkHour(metadata.todayWorkHour.taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent);
+        });
+    }
+    else if (provider.addWorkHour) {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: '正在登记工时到 DevOps',
+            cancellable: false
+        }, async () => {
+            await provider.addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, metadata.subject);
+        });
+    }
+    // @AI-End M9N0P 20260518 @@cc
+    vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
+}
+// @AI-End H0I1J 20260520 @@cc
 // @AI-Begin P2Q4R 20260520 @@cc
 async function resolvePushTarget(cwd, repository) {
     const state = await (0, AmendStrategy_1.checkBranchState)(cwd);
@@ -196,6 +267,7 @@ async function resolvePushTarget(cwd, repository) {
         branchName: remoteBranch.trim()
     };
 }
+// @AI-End P2Q4R 20260520 @@cc
 async function recoverAmend(cwd) {
     try {
         const { stdout } = await execFile('git', ['rev-parse', 'HEAD@{1}'], { cwd });
@@ -208,5 +280,4 @@ async function recoverAmend(cwd) {
         // 恢复失败不掩盖原始错误
     }
 }
-// @AI-End P2Q4R 20260520 @@cc
 //# sourceMappingURL=extension.js.map
