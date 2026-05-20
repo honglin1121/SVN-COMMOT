@@ -116,7 +116,8 @@ async function runSubmitWithDevOpsTask(config, cache) {
             pushTarget,
             provider,
             metadata,
-            onPushFailure: () => recoverAmend(cwd)
+            onPushFailure: () => recoverAmend(cwd),
+            successMessage: 'DevOps 信息已写入，推送并登记工时完成。'
         });
     }
     catch (error) {
@@ -160,7 +161,8 @@ async function runCommitAndPush(config, cache) {
             pushTarget,
             provider,
             metadata,
-            onPushFailure: () => recoverCommit(cwd)
+            onPushFailure: () => recoverCommit(cwd),
+            successMessage: '代码已提交，推送并登记工时完成。'
         });
     }
     catch (error) {
@@ -218,7 +220,7 @@ async function pushAndRecordHours(options) {
         });
     }
     // @AI-End M9N0P 20260518 @@cc
-    vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
+    vscode.window.showInformationMessage(options.successMessage);
 }
 // @AI-End H0I1J 20260520 @@cc
 // @AI-Begin P2Q4R 20260520 @@cc

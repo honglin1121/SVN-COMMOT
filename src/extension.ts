@@ -101,7 +101,8 @@ async function runSubmitWithDevOpsTask(config: ExtensionConfig, cache: DevOpsCac
       pushTarget,
       provider,
       metadata,
-      onPushFailure: () => recoverAmend(cwd)
+      onPushFailure: () => recoverAmend(cwd),
+      successMessage: 'DevOps 信息已写入，推送并登记工时完成。'
     });
   } catch (error) {
     vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
@@ -154,7 +155,8 @@ async function runCommitAndPush(config: ExtensionConfig, cache: DevOpsCache): Pr
       pushTarget,
       provider,
       metadata,
-      onPushFailure: () => recoverCommit(cwd)
+      onPushFailure: () => recoverCommit(cwd),
+      successMessage: '代码已提交，推送并登记工时完成。'
     });
   } catch (error) {
     vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
@@ -178,6 +180,7 @@ interface PushAndRecordOptions {
   provider: DevOpsProvider;
   metadata: DevOpsCommitMetadata;
   onPushFailure: () => Promise<void>;
+  successMessage: string;
 }
 
 async function pushAndRecordHours(options: PushAndRecordOptions): Promise<void> {
@@ -247,7 +250,7 @@ async function pushAndRecordHours(options: PushAndRecordOptions): Promise<void> 
   }
   // @AI-End M9N0P 20260518 @@cc
 
-  vscode.window.showInformationMessage('DevOps 信息已写入，推送并登记工时完成。');
+  vscode.window.showInformationMessage(options.successMessage);
 }
 // @AI-End H0I1J 20260520 @@cc
 
