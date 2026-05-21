@@ -226,7 +226,8 @@ async function pushAndRecordHours(options: PushAndRecordOptions): Promise<void> 
           createTime,
           spendTaskTime,
           dayCompletion,
-          workContent
+          workContent,
+          metadata.workHourTypeCode
         );
       }
     );
@@ -243,7 +244,8 @@ async function pushAndRecordHours(options: PushAndRecordOptions): Promise<void> 
           createTime,
           spendTaskTime,
           dayCompletion,
-          metadata.subject
+          metadata.subject,
+          metadata.workHourTypeCode
         );
       }
     );

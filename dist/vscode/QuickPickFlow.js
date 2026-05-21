@@ -129,6 +129,27 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     if (subject === undefined) {
         return undefined;
     }
+    // @AI-Begin N8M3K 20260521 @@cc
+    let workHourTypeCode = '24';
+    if (provider.fetchWorkHourTypes) {
+        const types = await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: '正在加载工时类型',
+            cancellable: false
+        }, () => cache.getWorkHourTypes(provider));
+        if (types.length > 0) {
+            const typePick = await vscode.window.showQuickPick(types.map((t) => ({ label: t.eleName, code: t.eleCode })), {
+                title: '选择工时类型',
+                placeHolder: '选择本次工时对应的类型',
+                ignoreFocusOut: true
+            });
+            if (!typePick) {
+                return undefined;
+            }
+            workHourTypeCode = typePick.code;
+        }
+    }
+    // @AI-End N8M3K 20260521 @@cc
     // @AI-Begin J7K8L 20260518 @@cc
     const hoursPrompt = todayWorkHour
         ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(selectedTask)}`
@@ -165,7 +186,10 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
         subject: subject.trim(),
         hours: normalizeNumber(hours),
         progress: normalizeNumber(progress),
-        todayWorkHour
+        todayWorkHour,
+        // @AI-Begin N8M3K 20260521 @@cc
+        workHourTypeCode
+        // @AI-End N8M3K 20260521 @@cc
     };
     // @AI-End J7K8L 20260518 @@cc
     const preview = (0, DevOpsCommitFormatter_1.formatDevOpsCommitMetadata)(commitTemplate, metadata);

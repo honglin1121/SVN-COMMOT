@@ -1,5 +1,5 @@
 import { ProviderError } from '../AppError';
-import { DevOpsProject, DevOpsProvider, DevOpsTask, DevOpsTaskType, WorkHourRecord } from '../DevOpsProvider';
+import { DevOpsProject, DevOpsProvider, DevOpsTask, DevOpsTaskType, WorkHourRecord, WorkHourType } from '../DevOpsProvider';
 import { fetchJson, parseResponsePayload, readableHttpError } from '../http';
 
 const DEVOPS_BASE_URL = 'https://devops.ctjsoft.com';
@@ -145,7 +145,8 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
     createTime: string,
     spendTaskTime: number,
     dayCompletion: string,
-    workContent: string
+    workContent: string,
+    taskWorkhourType: string
   ): Promise<void> {
     const session = await this.getSession();
 
@@ -166,7 +167,7 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
         },
         body: JSON.stringify({
           createTime,
-          taskWorkhourType: '24',
+          taskWorkhourType: taskWorkhourType,
           spendTaskTime,
           dayCompletion,
           workContent,
@@ -198,6 +199,27 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
   }
   // @AI-End D3E4F 20260518 @@cc
 
+  // @AI-Begin K9L2M 20260521 @@cc
+  async fetchWorkHourTypes(): Promise<WorkHourType[]> {
+    const session = await this.getSession();
+    const url = new URL(`${DEVOPS_BASE_URL}/devops-server/run/dictValue/query/queryDictValueByCode`);
+    url.searchParams.set('eleCatalogCode', 'taskWorkhourType');
+
+    const response = await fetchJson<{ data?: WorkHourType[] }>(this.name, url.toString(), {
+      timeoutMs: this.options.timeoutMs,
+      headers: {
+        cookie: session.cookie,
+        'user-context': JSON.stringify({
+          userId: session.userId,
+          pageId: DEVOPS_PAGE_ID
+        })
+      }
+    });
+
+    return (response.data ?? []).filter((item) => item.eleCode && item.eleName);
+  }
+  // @AI-End K9L2M 20260521 @@cc
+
   // @AI-Begin G5H6I 20260518 @@cc
   async modifyWorkHour(
     taskWorkhourId: string,
@@ -205,7 +227,8 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
     createTime: string,
     spendTaskTime: number,
     dayCompletion: string,
-    workContent: string
+    workContent: string,
+    taskWorkhourType: string
   ): Promise<void> {
     const session = await this.getSession();
 
@@ -226,7 +249,7 @@ export class CompanyDevOpsAdapter implements DevOpsProvider {
         },
         body: JSON.stringify({
           createTime,
-          taskWorkhourType: '24',
+          taskWorkhourType: taskWorkhourType,
           spendTaskTime,
           dayCompletion,
           workContent,

@@ -82,7 +82,7 @@ class CompanyDevOpsAdapter {
         await this.getSession();
         return true;
     }
-    async addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, workContent) {
+    async addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, workContent, taskWorkhourType) {
         const session = await this.getSession();
         await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/add/addWorkHour`, {
             method: 'POST',
@@ -98,7 +98,7 @@ class CompanyDevOpsAdapter {
             },
             body: JSON.stringify({
                 createTime,
-                taskWorkhourType: '24',
+                taskWorkhourType: taskWorkhourType,
                 spendTaskTime,
                 dayCompletion,
                 workContent,
@@ -125,8 +125,26 @@ class CompanyDevOpsAdapter {
         return response.data ?? [];
     }
     // @AI-End D3E4F 20260518 @@cc
+    // @AI-Begin K9L2M 20260521 @@cc
+    async fetchWorkHourTypes() {
+        const session = await this.getSession();
+        const url = new URL(`${DEVOPS_BASE_URL}/devops-server/run/dictValue/query/queryDictValueByCode`);
+        url.searchParams.set('eleCatalogCode', 'taskWorkhourType');
+        const response = await (0, http_1.fetchJson)(this.name, url.toString(), {
+            timeoutMs: this.options.timeoutMs,
+            headers: {
+                cookie: session.cookie,
+                'user-context': JSON.stringify({
+                    userId: session.userId,
+                    pageId: DEVOPS_PAGE_ID
+                })
+            }
+        });
+        return (response.data ?? []).filter((item) => item.eleCode && item.eleName);
+    }
+    // @AI-End K9L2M 20260521 @@cc
     // @AI-Begin G5H6I 20260518 @@cc
-    async modifyWorkHour(taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent) {
+    async modifyWorkHour(taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent, taskWorkhourType) {
         const session = await this.getSession();
         await (0, http_1.fetchJson)(this.name, `${DEVOPS_BASE_URL}/devops-server/config/v3/task/modify/modifyWorkHour`, {
             method: 'POST',
@@ -142,7 +160,7 @@ class CompanyDevOpsAdapter {
             },
             body: JSON.stringify({
                 createTime,
-                taskWorkhourType: '24',
+                taskWorkhourType: taskWorkhourType,
                 spendTaskTime,
                 dayCompletion,
                 workContent,

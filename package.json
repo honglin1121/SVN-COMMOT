@@ -2,7 +2,7 @@
   "name": "issue-link-push",
   "displayName": "Issue Link Push",
   "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
-   "version": "0.3.1",
+   "version": "0.3.2",
   "publisher": "lkk-vscode-2136",
   "author": {
     "name": "LKK",
@@ -61,7 +61,7 @@
       },
       {
         "command": "issueLinkPush.commitAndPush",
-        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u5e76\u63d0\u4ea4\u63a8\u9001",
+        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u63d0\u4ea4\u5e76\u63a8\u9001",
         "category": "Issue Link Push",
         "icon": "$(git-commit)"
       }

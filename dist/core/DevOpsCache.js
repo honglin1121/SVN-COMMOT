@@ -6,6 +6,10 @@ class DevOpsCache {
     projectsCachedAt = 0;
     projects = [];
     tasks = new Map();
+    // @AI-Begin Q3P8M 20260521 @@cc
+    workHourTypesCachedAt = 0;
+    workHourTypes = [];
+    // @AI-End Q3P8M 20260521 @@cc
     constructor(ttlMs) {
         this.ttlMs = ttlMs;
     }
@@ -25,11 +29,25 @@ class DevOpsCache {
         return items;
     }
     // @AI-End T8K2M 20260518 @@cc
+    // @AI-Begin Q3P8M 20260521 @@cc
+    async getWorkHourTypes(provider) {
+        if (this.ttlMs > 0 && Date.now() - this.workHourTypesCachedAt < this.ttlMs) {
+            return this.workHourTypes;
+        }
+        this.workHourTypes = await provider.fetchWorkHourTypes();
+        this.workHourTypesCachedAt = Date.now();
+        return this.workHourTypes;
+    }
+    // @AI-End Q3P8M 20260521 @@cc
     // @AI-Begin X9N7P 20260518 @@cc
     clear() {
         this.projects = [];
         this.projectsCachedAt = 0;
         this.tasks.clear();
+        // @AI-Begin Q3P8M 20260521 @@cc
+        this.workHourTypes = [];
+        this.workHourTypesCachedAt = 0;
+        // @AI-End Q3P8M 20260521 @@cc
     }
 }
 exports.DevOpsCache = DevOpsCache;

@@ -1,7 +1,12 @@
 # Changelog
 
+
+## 0.3.2 (2026-05-21)
+
+- 新增工时类型选择步骤
+
 ## 0.3.1 (2026-05-20)
-- 新增「关联 DevOps 任务并提交推送」命令（`commitAndPush`），支持新建 commit + 推送的一站式流程
+- 新增「关联 DevOps 任务并提交推送」命令（`commitAndPush`），支持新建 commit + 推送的一站式流程1
 ## 0.3.0 (2026-05-20)
 
 - 兼容本地分支无远程 upstream 的场景，引导用户选择 remote 和分支名后自动 `push --set-upstream`

@@ -207,7 +207,7 @@ async function pushAndRecordHours(options) {
             cancellable: false
         }, async () => {
             const workContent = metadata.todayWorkHour.workContent + '\n' + metadata.subject;
-            await provider.modifyWorkHour(metadata.todayWorkHour.taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent);
+            await provider.modifyWorkHour(metadata.todayWorkHour.taskWorkhourId, taskId, createTime, spendTaskTime, dayCompletion, workContent, metadata.workHourTypeCode);
         });
     }
     else if (provider.addWorkHour) {
@@ -216,7 +216,7 @@ async function pushAndRecordHours(options) {
             title: '正在登记工时到 DevOps',
             cancellable: false
         }, async () => {
-            await provider.addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, metadata.subject);
+            await provider.addWorkHour(taskId, createTime, spendTaskTime, dayCompletion, metadata.subject, metadata.workHourTypeCode);
         });
     }
     // @AI-End M9N0P 20260518 @@cc

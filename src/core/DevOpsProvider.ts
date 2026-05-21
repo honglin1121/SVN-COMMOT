@@ -31,6 +31,14 @@ export interface WorkHourRecord {
 }
 // @AI-End A1B2C 20260518 @@cc
 
+// @AI-Begin Z9Y8X 20260521 @@cc
+export interface WorkHourType {
+  eleId: string;
+  eleCode: string;
+  eleName: string;
+}
+// @AI-End Z9Y8X 20260521 @@cc
+
 export interface DevOpsCommitMetadata {
   project: DevOpsProject;
   task: DevOpsTask;
@@ -41,6 +49,9 @@ export interface DevOpsCommitMetadata {
   // @AI-Begin A1B2C 20260518 @@cc
   todayWorkHour?: WorkHourRecord;
   // @AI-End A1B2C 20260518 @@cc
+  // @AI-Begin W6V7U 20260521 @@cc
+  workHourTypeCode: string;
+  // @AI-End W6V7U 20260521 @@cc
 }
 
 export interface DevOpsProvider {
@@ -51,12 +62,16 @@ export interface DevOpsProvider {
   // @AI-Begin A1B2C 20260518 @@cc
   fetchWorkHours?(taskId: string): Promise<WorkHourRecord[]>;
   // @AI-End A1B2C 20260518 @@cc
+  // @AI-Begin T5S4R 20260521 @@cc
+  fetchWorkHourTypes?(): Promise<WorkHourType[]>;
+  // @AI-End T5S4R 20260521 @@cc
   addWorkHour?(
     taskId: string,
     createTime: string,
     spendTaskTime: number,
     dayCompletion: string,
-    workContent: string
+    workContent: string,
+    taskWorkhourType: string
   ): Promise<void>;
   // @AI-Begin A1B2C 20260518 @@cc
   modifyWorkHour?(
@@ -65,7 +80,8 @@ export interface DevOpsProvider {
     createTime: string,
     spendTaskTime: number,
     dayCompletion: string,
-    workContent: string
+    workContent: string,
+    taskWorkhourType: string
   ): Promise<void>;
   // @AI-End A1B2C 20260518 @@cc
 }
