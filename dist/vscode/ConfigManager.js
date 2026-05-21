@@ -48,6 +48,9 @@ class ConfigManager {
             commitTemplate: config.get('commitTemplate', '${COMMIT_TYPE}:${SUBJECT} scrum -e ${CODE} -h:${HOURS} -s:${PROGRESS}'),
             requestTimeoutMs: config.get('requestTimeoutMs', 10000),
             cacheTtlMs: config.get('cacheTtlMs', 300000),
+            workHourMode: config.get('workHourMode', 'append'),
+            workContentMode: config.get('workContentMode', 'append'),
+            progressMode: config.get('progressMode', 'overwrite'),
             username: await this.secrets.get(ConfigManager.usernameKey),
             password: await this.secrets.get(ConfigManager.passwordKey)
         };

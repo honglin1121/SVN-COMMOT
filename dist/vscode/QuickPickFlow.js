@@ -36,6 +36,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.collectDevOpsCommitMetadata = collectDevOpsCommitMetadata;
 const vscode = __importStar(require("vscode"));
 const DevOpsCommitFormatter_1 = require("../core/DevOpsCommitFormatter");
+const WORK_HOUR_MODE_HINT = {
+    append: '[累加模式]',
+    overwrite: '[覆盖模式]'
+};
+const WORK_CONTENT_MODE_HINT = {
+    append: '[追加模式]',
+    overwrite: '[覆盖模式]'
+};
+const PROGRESS_MODE_HINT = {
+    append: '[累加模式，上限100%]',
+    overwrite: '[覆盖模式]'
+};
 const COMMIT_TYPES = [
     { label: 'feat', description: '增加新功能' },
     { label: 'fix', description: '修复 bug' },
@@ -49,7 +61,7 @@ const COMMIT_TYPES = [
     { label: 'Merge', description: '合并操作，必须以 Merge 空格开头' },
     { label: 'doc', description: '文档改动' }
 ];
-async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
+async function collectDevOpsCommitMetadata(provider, cache, config) {
     // @AI-Begin R2S5T 20260519 @@cc
     const taskTypePick = await vscode.window.showQuickPick([
         { label: 'task', description: '开发任务', value: 'task' },
@@ -119,9 +131,15 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     if (!commitTypePick) {
         return undefined;
     }
+    if (todayWorkHour) {
+        const choice = await vscode.window.showInformationMessage(`今日已登记描述：\n\n${todayWorkHour.workContent}`, { modal: true }, '继续');
+        if (!choice) {
+            return undefined;
+        }
+    }
     const subject = await vscode.window.showInputBox({
         title: '输入提交说明 subject',
-        prompt: '请输入本次提交的简短描述，例如：修复登录异常。',
+        prompt: `请输入本次提交的简短描述。${WORK_CONTENT_MODE_HINT[config.workContentMode]}`,
         placeHolder: '修复xxxx缺陷',
         ignoreFocusOut: true,
         validateInput: validateSubject
@@ -131,6 +149,7 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     }
     // @AI-Begin N8M3K 20260521 @@cc
     let workHourTypeCode = '24';
+    let workHourTypeName = '';
     if (provider.fetchWorkHourTypes) {
         const types = await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -147,13 +166,14 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
                 return undefined;
             }
             workHourTypeCode = typePick.code;
+            workHourTypeName = typePick.label;
         }
     }
     // @AI-End N8M3K 20260521 @@cc
     // @AI-Begin J7K8L 20260518 @@cc
     const hoursPrompt = todayWorkHour
-        ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(selectedTask)}`
-        : `请输入本次提交关联的 DevOps 工时。${formatHoursReference(selectedTask)}`;
+        ? `${formatTodayWorkHourHint(todayWorkHour)} ${WORK_HOUR_MODE_HINT[config.workHourMode]}\n${formatHoursReference(selectedTask)}`
+        : `消耗工时。${WORK_HOUR_MODE_HINT[config.workHourMode]} ${formatHoursReference(selectedTask)}`;
     const hours = await vscode.window.showInputBox({
         title: '输入投入工时',
         prompt: hoursPrompt,
@@ -167,7 +187,7 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
     }
     const progress = await vscode.window.showInputBox({
         title: '输入任务完成度',
-        prompt: `请输入任务完成度百分比。${formatProgressReference(selectedTask)}100 会让工作项自动置为已解决。`,
+        prompt: `完成百分比。${PROGRESS_MODE_HINT[config.progressMode]} ${formatProgressReference(selectedTask)}。`,
         placeHolder: '0-100',
         ignoreFocusOut: true,
         validateInput: validateProgress
@@ -188,13 +208,21 @@ async function collectDevOpsCommitMetadata(provider, cache, commitTemplate) {
         progress: normalizeNumber(progress),
         todayWorkHour,
         // @AI-Begin N8M3K 20260521 @@cc
-        workHourTypeCode
+        workHourTypeCode,
         // @AI-End N8M3K 20260521 @@cc
+        workHourTypeName
     };
     // @AI-End J7K8L 20260518 @@cc
-    const preview = (0, DevOpsCommitFormatter_1.formatDevOpsCommitMetadata)(commitTemplate, metadata);
-    const confirmation = await vscode.window.showInformationMessage(`即将把最新未推送 commit message 修改为：${preview}`, { modal: true }, '确认并推送', '取消');
+    const preview = (0, DevOpsCommitFormatter_1.formatDevOpsCommitMetadata)(config.commitTemplate, metadata);
+    // @AI-Begin L5K7J 20260521 @@cc
+    const confirmation = await vscode.window.showInformationMessage(`即将把最新未推送 commit message 修改为：${preview}`, { modal: true }, '确认并推送', '复制');
+    if (confirmation === '复制') {
+        await vscode.env.clipboard.writeText(preview);
+        vscode.window.showInformationMessage('已复制 commit message 到剪贴板。');
+        return undefined;
+    }
     return confirmation === '确认并推送' ? metadata : undefined;
+    // @AI-End L5K7J 20260521 @@cc
 }
 function validateSubject(value) {
     const trimmed = value.trim();
@@ -248,14 +276,14 @@ function formatHoursReference(task) {
         task.estimatedHours ? `预计工时：${task.estimatedHours}` : undefined,
         task.usedHours ? `已发生工时：${task.usedHours}` : undefined
     ].filter(Boolean);
-    return parts.length ? `参考：${parts.join('，')}。` : '';
+    return parts.length ? `\n参考：${parts.join('，')}。` : '';
 }
 function formatProgressReference(task) {
     return task.currentProgress ? `当前完成度：${task.currentProgress}%。` : '';
 }
 // @AI-Begin J7K8L 20260518 @@cc
 function formatTodayWorkHourHint(record) {
-    return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}），工时将覆盖非累加，工作内容将追加。`;
+    return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}）`;
 }
 // @AI-End J7K8L 20260518 @@cc
 // @AI-Begin R2S5T 20260519 @@cc

@@ -2,6 +2,22 @@ import * as vscode from 'vscode';
 import { DevOpsCache } from '../core/DevOpsCache';
 import { formatDevOpsCommitMetadata } from '../core/DevOpsCommitFormatter';
 import { DevOpsCommitMetadata, DevOpsProvider, DevOpsTask, DevOpsTaskType, WorkHourRecord, WorkHourType } from '../core/DevOpsProvider';
+import { ExtensionConfig } from './ConfigManager';
+
+const WORK_HOUR_MODE_HINT: Record<string, string> = {
+  append: '[累加模式]',
+  overwrite: '[覆盖模式]'
+};
+
+const WORK_CONTENT_MODE_HINT: Record<string, string> = {
+  append: '[追加模式]',
+  overwrite: '[覆盖模式]'
+};
+
+const PROGRESS_MODE_HINT: Record<string, string> = {
+  append: '[累加模式，上限100%]',
+  overwrite: '[覆盖模式]'
+};
 
 const COMMIT_TYPES = [
   { label: 'feat', description: '增加新功能' },
@@ -20,7 +36,7 @@ const COMMIT_TYPES = [
 export async function collectDevOpsCommitMetadata(
   provider: DevOpsProvider,
   cache: DevOpsCache,
-  commitTemplate: string
+  config: ExtensionConfig
 ): Promise<DevOpsCommitMetadata | undefined> {
   // @AI-Begin R2S5T 20260519 @@cc
   const taskTypePick = await vscode.window.showQuickPick(
@@ -116,7 +132,7 @@ export async function collectDevOpsCommitMetadata(
 
   const subject = await vscode.window.showInputBox({
     title: '输入提交说明 subject',
-    prompt: '请输入本次提交的简短描述，例如：修复登录异常。',
+    prompt: buildSubjectPrompt(config, todayWorkHour),
     placeHolder: '修复xxxx缺陷',
     ignoreFocusOut: true,
     validateInput: validateSubject
@@ -128,6 +144,7 @@ export async function collectDevOpsCommitMetadata(
 
   // @AI-Begin N8M3K 20260521 @@cc
   let workHourTypeCode = '24';
+  let workHourTypeName = '';
   if (provider.fetchWorkHourTypes) {
     const types = await vscode.window.withProgress(
       {
@@ -151,14 +168,15 @@ export async function collectDevOpsCommitMetadata(
         return undefined;
       }
       workHourTypeCode = typePick.code;
+      workHourTypeName = typePick.label;
     }
   }
   // @AI-End N8M3K 20260521 @@cc
 
   // @AI-Begin J7K8L 20260518 @@cc
   const hoursPrompt = todayWorkHour
-    ? `${formatTodayWorkHourHint(todayWorkHour)}\n${formatHoursReference(selectedTask)}`
-    : `请输入本次提交关联的 DevOps 工时。${formatHoursReference(selectedTask)}`;
+    ? `${formatTodayWorkHourHint(todayWorkHour)} ${WORK_HOUR_MODE_HINT[config.workHourMode]}\n${formatHoursReference(selectedTask)}`
+    : `消耗工时。${WORK_HOUR_MODE_HINT[config.workHourMode]} ${formatHoursReference(selectedTask)}`;
 
   const hours = await vscode.window.showInputBox({
     title: '输入投入工时',
@@ -175,7 +193,7 @@ export async function collectDevOpsCommitMetadata(
 
   const progress = await vscode.window.showInputBox({
     title: '输入任务完成度',
-    prompt: `请输入任务完成度百分比。${formatProgressReference(selectedTask)}100 会让工作项自动置为已解决。`,
+    prompt: `完成百分比。${PROGRESS_MODE_HINT[config.progressMode]} ${formatProgressReference(selectedTask)}。`,
     placeHolder: '0-100',
     ignoreFocusOut: true,
     validateInput: validateProgress
@@ -198,11 +216,12 @@ export async function collectDevOpsCommitMetadata(
     progress: normalizeNumber(progress),
     todayWorkHour,
     // @AI-Begin N8M3K 20260521 @@cc
-    workHourTypeCode
+    workHourTypeCode,
     // @AI-End N8M3K 20260521 @@cc
+    workHourTypeName
   };
   // @AI-End J7K8L 20260518 @@cc
-  const preview = formatDevOpsCommitMetadata(commitTemplate, metadata);
+  const preview = formatDevOpsCommitMetadata(config.commitTemplate, metadata);
   // @AI-Begin L5K7J 20260521 @@cc
   const confirmation = await vscode.window.showInformationMessage(
     `即将把最新未推送 commit message 修改为：${preview}`,
@@ -278,7 +297,7 @@ function formatHoursReference(task: { estimatedHours?: string; usedHours?: strin
     task.estimatedHours ? `预计工时：${task.estimatedHours}` : undefined,
     task.usedHours ? `已发生工时：${task.usedHours}` : undefined
   ].filter(Boolean);
-  return parts.length ? `参考：${parts.join('，')}。` : '';
+  return parts.length ? `\n参考：${parts.join('，')}。` : '';
 }
 
 function formatProgressReference(task: { currentProgress?: string }): string {
@@ -287,7 +306,15 @@ function formatProgressReference(task: { currentProgress?: string }): string {
 
 // @AI-Begin J7K8L 20260518 @@cc
 function formatTodayWorkHourHint(record: { spendTaskTime: number; dayCompletion: string }): string {
-  return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}），工时将覆盖非累加，工作内容将追加。`;
+  return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}）`;
+}
+
+function buildSubjectPrompt(config: ExtensionConfig, todayWorkHour?: WorkHourRecord): string {
+  const base = `请输入本次提交的简短描述。${WORK_CONTENT_MODE_HINT[config.workContentMode]}`;
+  if (!todayWorkHour) {
+    return base;
+  }
+  return `${base}\n\n今日描述：\n${todayWorkHour.workContent}\n`;
 }
 // @AI-End J7K8L 20260518 @@cc
 

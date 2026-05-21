@@ -2,8 +2,8 @@
   "name": "issue-link-push",
   "displayName": "Issue Link Push",
   "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
-   "version": "0.3.3",
-  "publisher": "lkk-vscode-2136",
+   "version": "0.3.4",
+  "publisher": "liukuankuan2136",
   "author": {
     "name": "LKK",
     "email": "your-email@example.com"
@@ -34,6 +34,7 @@
   "activationEvents": [
     "onCommand:issueLinkPush.submitWithDevOpsTask",
     "onCommand:issueLinkPush.commitAndPush",
+    "onCommand:issueLinkPush.commitOnly",
     "onCommand:issueLinkPush.initializeDevOps",
     "onCommand:issueLinkPush.clearCache",
     "onStartupFinished"
@@ -64,6 +65,12 @@
         "title": "\u5173\u8054 DevOps \u4efb\u52a1\u63d0\u4ea4\u5e76\u63a8\u9001",
         "category": "Issue Link Push",
         "icon": "$(git-commit)"
+      },
+      {
+        "command": "issueLinkPush.commitOnly",
+        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u4ec5\u63d0\u4ea4",
+        "category": "Issue Link Push",
+        "icon": "$(save)"
       }
     ],
     "menus": {
@@ -74,6 +81,10 @@
         },
         {
           "command": "issueLinkPush.commitAndPush",
+          "group": "navigation"
+        },
+        {
+          "command": "issueLinkPush.commitOnly",
           "group": "navigation"
         }
       ],
@@ -89,6 +100,9 @@
         },
         {
           "command": "issueLinkPush.commitAndPush"
+        },
+        {
+          "command": "issueLinkPush.commitOnly"
         }
       ]
     },
@@ -111,6 +125,24 @@
           "default": 300000,
           "minimum": 0,
           "description": "Local DevOps product and task cache TTL in milliseconds. Set to 0 to disable caching."
+        },
+        "issueLinkPush.workHourMode": {
+          "type": "string",
+          "enum": ["append", "overwrite"],
+          "default": "append",
+          "description": "工时记录模式。追加：新工时累加到当天已有工时；覆盖：新工时替换当天已有工时。"
+        },
+        "issueLinkPush.workContentMode": {
+          "type": "string",
+          "enum": ["append", "overwrite"],
+          "default": "append",
+          "description": "工时描述记录模式。追加：新描述追加到已有描述末尾；覆盖：新描述替换已有描述。"
+        },
+        "issueLinkPush.progressMode": {
+          "type": "string",
+          "enum": ["append", "overwrite"],
+          "default": "overwrite",
+          "description": "任务百分比记录模式。追加：新百分比累加到当天已有百分比（上限 100%）；覆盖：新百分比替换已有百分比。"
         }
       }
     }

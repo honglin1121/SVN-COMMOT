@@ -5,7 +5,8 @@
       "Bash(npx vsce *)",
       "Bash(Select-Object -First 20)",
       "Bash(Get-ChildItem -Path c:\\\\code\\\\mydemo -Depth 2 -Directory)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(dir /s /b src\\\\*.ts)"
     ]
   }
 }

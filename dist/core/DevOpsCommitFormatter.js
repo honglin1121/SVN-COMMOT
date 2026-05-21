@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatDevOpsCommitMetadata = formatDevOpsCommitMetadata;
 function formatDevOpsCommitMetadata(template, metadata) {
-    const message = template
+    const resolvedTemplate = /AI/i.test(metadata.workHourTypeName)
+        ? template.replace('-h:', '-aih:')
+        : template;
+    const message = resolvedTemplate
         .replaceAll('${COMMIT_TYPE}', metadata.commitType)
         .replaceAll('${SUBJECT}', metadata.subject)
         .replaceAll('${CODE}', metadata.task.code)

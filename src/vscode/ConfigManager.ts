@@ -4,6 +4,9 @@ export interface ExtensionConfig {
   commitTemplate: string;
   requestTimeoutMs: number;
   cacheTtlMs: number;
+  workHourMode: 'append' | 'overwrite';
+  workContentMode: 'append' | 'overwrite';
+  progressMode: 'append' | 'overwrite';
   username?: string;
   password?: string;
 }
@@ -23,6 +26,9 @@ export class ConfigManager {
       ),
       requestTimeoutMs: config.get<number>('requestTimeoutMs', 10000),
       cacheTtlMs: config.get<number>('cacheTtlMs', 300000),
+      workHourMode: config.get<'append' | 'overwrite'>('workHourMode', 'append'),
+      workContentMode: config.get<'append' | 'overwrite'>('workContentMode', 'append'),
+      progressMode: config.get<'append' | 'overwrite'>('progressMode', 'overwrite'),
       username: await this.secrets.get(ConfigManager.usernameKey),
       password: await this.secrets.get(ConfigManager.passwordKey)
     };

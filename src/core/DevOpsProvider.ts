@@ -52,6 +52,7 @@ export interface DevOpsCommitMetadata {
   // @AI-Begin W6V7U 20260521 @@cc
   workHourTypeCode: string;
   // @AI-End W6V7U 20260521 @@cc
+  workHourTypeName: string;
 }
 
 export interface DevOpsProvider {
