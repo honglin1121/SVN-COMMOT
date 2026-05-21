@@ -203,14 +203,22 @@ export async function collectDevOpsCommitMetadata(
   };
   // @AI-End J7K8L 20260518 @@cc
   const preview = formatDevOpsCommitMetadata(commitTemplate, metadata);
+  // @AI-Begin L5K7J 20260521 @@cc
   const confirmation = await vscode.window.showInformationMessage(
     `即将把最新未推送 commit message 修改为：${preview}`,
     { modal: true },
     '确认并推送',
-    '取消'
+    '复制'
   );
 
+  if (confirmation === '复制') {
+    await vscode.env.clipboard.writeText(preview);
+    vscode.window.showInformationMessage('已复制 commit message 到剪贴板。');
+    return undefined;
+  }
+
   return confirmation === '确认并推送' ? metadata : undefined;
+  // @AI-End L5K7J 20260521 @@cc
 }
 
 function validateSubject(value: string): string | undefined {
