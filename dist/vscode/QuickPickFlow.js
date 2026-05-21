@@ -131,15 +131,9 @@ async function collectDevOpsCommitMetadata(provider, cache, config) {
     if (!commitTypePick) {
         return undefined;
     }
-    if (todayWorkHour) {
-        const choice = await vscode.window.showInformationMessage(`今日已登记描述：\n\n${todayWorkHour.workContent}`, { modal: true }, '继续');
-        if (!choice) {
-            return undefined;
-        }
-    }
     const subject = await vscode.window.showInputBox({
         title: '输入提交说明 subject',
-        prompt: `请输入本次提交的简短描述。${WORK_CONTENT_MODE_HINT[config.workContentMode]}`,
+        prompt: buildSubjectPrompt(config, todayWorkHour),
         placeHolder: '修复xxxx缺陷',
         ignoreFocusOut: true,
         validateInput: validateSubject
@@ -284,6 +278,13 @@ function formatProgressReference(task) {
 // @AI-Begin J7K8L 20260518 @@cc
 function formatTodayWorkHourHint(record) {
     return `今日已登记 ${record.spendTaskTime}h（${record.dayCompletion}）`;
+}
+function buildSubjectPrompt(config, todayWorkHour) {
+    const base = `请输入本次提交的简短描述。${WORK_CONTENT_MODE_HINT[config.workContentMode]}`;
+    if (!todayWorkHour) {
+        return base;
+    }
+    return `${base}\n\n今日描述：\n${todayWorkHour.workContent}\n`;
 }
 // @AI-End J7K8L 20260518 @@cc
 // @AI-Begin R2S5T 20260519 @@cc
