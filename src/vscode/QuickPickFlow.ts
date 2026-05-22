@@ -224,9 +224,9 @@ export async function collectDevOpsCommitMetadata(
   const preview = formatDevOpsCommitMetadata(config.commitTemplate, metadata);
   // @AI-Begin L5K7J 20260521 @@cc
   const confirmation = await vscode.window.showInformationMessage(
-    `即将把最新未推送 commit message 修改为：${preview}`,
+    `即将提交代码到 SVN，commit message 为：${preview}`,
     { modal: true },
-    '确认并推送',
+    '确认并提交',
     '复制'
   );
 
@@ -236,7 +236,7 @@ export async function collectDevOpsCommitMetadata(
     return undefined;
   }
 
-  return confirmation === '确认并推送' ? metadata : undefined;
+  return confirmation === '确认并提交' ? metadata : undefined;
   // @AI-End L5K7J 20260521 @@cc
 }
 

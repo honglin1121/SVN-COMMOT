@@ -1,25 +1,25 @@
 {
-  "name": "issue-link-push",
-  "displayName": "Issue Link Push",
-  "description": "关联 DevOps 任务并自动生成规范的提交信息且推送代码。",
-   "version": "0.3.4",
-  "publisher": "liukuankuan2136",
+  "name": "svn-link-push",
+  "displayName": "SVN Link Push",
+  "description": "关联 DevOps 任务并自动生成规范的提交信息，通过 SVN 提交代码并登记工时。",
+  "version": "0.4.0",
+  "publisher": "hl",
   "author": {
-    "name": "LKK",
-    "email": "your-email@example.com"
+    "name": "hl",
+    "email": "honglin1121@github.com"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/liukuankuan2136/git-push.git"
+    "url": "https://github.com/honglin1121/SVN-COMMOT.git"
   },
-  "homepage": "https://github.com/liukuankuan2136/git-push#readme",
+  "homepage": "https://github.com/honglin1121/SVN-COMMOT#readme",
   "bugs": {
-    "url": "https://github.com/liukuankuan2136/git-push/issues"
+    "url": "https://github.com/honglin1121/SVN-COMMOT/issues"
   },
   "keywords": [
     "DevOps",
-    "Git",
+    "SVN",
     "Commit",
     "Workhour"
   ],
@@ -32,115 +32,96 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:issueLinkPush.submitWithDevOpsTask",
-    "onCommand:issueLinkPush.commitAndPush",
-    "onCommand:issueLinkPush.commitOnly",
-    "onCommand:issueLinkPush.initializeDevOps",
-    "onCommand:issueLinkPush.clearCache",
+    "onCommand:svnLinkPush.commitToSvn",
+    "onCommand:svnLinkPush.initializeDevOps",
+    "onCommand:svnLinkPush.clearCache",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "issueLinkPush.submitWithDevOpsTask",
-        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u5e76\u63a8\u9001",
-        "category": "Issue Link Push",
+        "command": "svnLinkPush.commitToSvn",
+        "title": "关联 DevOps 任务并提交到 SVN",
+        "category": "SVN Link Push",
         "icon": "$(checklist)"
       },
       {
-        "command": "issueLinkPush.initializeDevOps",
-        "title": "\u521d\u59cb\u5316 DevOps \u8d26\u53f7",
-        "category": "Issue Link Push",
+        "command": "svnLinkPush.initializeDevOps",
+        "title": "初始化 DevOps 账号",
+        "category": "SVN Link Push",
         "icon": "$(account)"
       },
       {
-        "command": "issueLinkPush.clearCache",
-        "title": "\u6e05\u9664 DevOps \u7f13\u5b58",
-        "category": "Issue Link Push",
+        "command": "svnLinkPush.clearCache",
+        "title": "清除 DevOps 缓存",
+        "category": "SVN Link Push",
         "icon": "$(clear-all)"
-      },
-      {
-        "command": "issueLinkPush.commitAndPush",
-        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u63d0\u4ea4\u5e76\u63a8\u9001",
-        "category": "Issue Link Push",
-        "icon": "$(git-commit)"
-      },
-      {
-        "command": "issueLinkPush.commitOnly",
-        "title": "\u5173\u8054 DevOps \u4efb\u52a1\u4ec5\u63d0\u4ea4",
-        "category": "Issue Link Push",
-        "icon": "$(save)"
       }
     ],
     "menus": {
       "scm/title": [
         {
-          "command": "issueLinkPush.submitWithDevOpsTask",
-          "group": "navigation"
-        },
-        {
-          "command": "issueLinkPush.commitAndPush",
-          "group": "navigation"
-        },
-        {
-          "command": "issueLinkPush.commitOnly",
+          "command": "issueLinkPush.commitToSvn",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
-          "command": "issueLinkPush.submitWithDevOpsTask"
+          "command": "svnLinkPush.commitToSvn"
         },
         {
-          "command": "issueLinkPush.initializeDevOps"
+          "command": "svnLinkPush.initializeDevOps"
         },
         {
-          "command": "issueLinkPush.clearCache"
-        },
-        {
-          "command": "issueLinkPush.commitAndPush"
-        },
-        {
-          "command": "issueLinkPush.commitOnly"
+          "command": "svnLinkPush.clearCache"
         }
       ]
     },
     "configuration": {
-      "title": "Issue Link Push",
+      "title": "SVN Link Push",
       "properties": {
-        "issueLinkPush.commitTemplate": {
+        "svnLinkPush.commitTemplate": {
           "type": "string",
           "default": "${COMMIT_TYPE}:${SUBJECT} scrum -e ${CODE} -h:${HOURS} -s:${PROGRESS}",
           "description": "Commit message template. Supports ${COMMIT_TYPE}, ${SUBJECT}, ${CODE}, ${HOURS}, ${PROGRESS}, ${TYPE}, ${PROJECT}."
         },
-        "issueLinkPush.requestTimeoutMs": {
+        "svnLinkPush.requestTimeoutMs": {
           "type": "number",
           "default": 10000,
           "minimum": 1000,
           "description": "DevOps API request timeout in milliseconds."
         },
-        "issueLinkPush.cacheTtlMs": {
+        "svnLinkPush.cacheTtlMs": {
           "type": "number",
           "default": 300000,
           "minimum": 0,
           "description": "Local DevOps product and task cache TTL in milliseconds. Set to 0 to disable caching."
         },
-        "issueLinkPush.workHourMode": {
+        "svnLinkPush.workHourMode": {
           "type": "string",
-          "enum": ["append", "overwrite"],
+          "enum": [
+            "append",
+            "overwrite"
+          ],
           "default": "append",
           "description": "工时记录模式。追加：新工时累加到当天已有工时；覆盖：新工时替换当天已有工时。"
         },
-        "issueLinkPush.workContentMode": {
+        "svnLinkPush.workContentMode": {
           "type": "string",
-          "enum": ["append", "overwrite"],
+          "enum": [
+            "append",
+            "overwrite"
+          ],
           "default": "append",
           "description": "工时描述记录模式。追加：新描述追加到已有描述末尾；覆盖：新描述替换已有描述。"
         },
-        "issueLinkPush.progressMode": {
+        "svnLinkPush.progressMode": {
           "type": "string",
-          "enum": ["append", "overwrite"],
+          "enum": [
+            "append",
+            "overwrite"
+          ],
           "default": "overwrite",
           "description": "任务百分比记录模式。追加：新百分比累加到当天已有百分比（上限 100%）；覆盖：新百分比替换已有百分比。"
         }
@@ -155,6 +136,7 @@
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.90.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.4.5"
   }
 }

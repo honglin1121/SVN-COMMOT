@@ -12,13 +12,13 @@ export interface ExtensionConfig {
 }
 
 export class ConfigManager {
-  private static readonly usernameKey = 'issueLinkPush.devops.username';
-  private static readonly passwordKey = 'issueLinkPush.devops.password';
+  private static readonly usernameKey = 'svnLinkPush.devops.username';
+  private static readonly passwordKey = 'svnLinkPush.devops.password';
 
   constructor(private readonly secrets: vscode.SecretStorage) {}
 
   async load(): Promise<ExtensionConfig> {
-    const config = vscode.workspace.getConfiguration('issueLinkPush');
+    const config = vscode.workspace.getConfiguration('svnLinkPush');
     return {
       commitTemplate: config.get<string>(
         'commitTemplate',
